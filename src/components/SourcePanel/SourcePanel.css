@@ -1,0 +1,21 @@
+/* Source panel shell */
+.source-panel { min-width: 0; min-height: 0; display: flex; flex-direction: column; border-right: 1px solid color-mix(in srgb, var(--border) 58%, transparent); }
+.source-panel:last-child { border-right: 0; }
+
+/* Embedded editor */
+.source-panel__editor { flex: 1; min-height: 0; width: 100%; padding: 10px; background: var(--background); overflow: hidden; }
+.source-panel__editor > section { height: 100%; min-height: 0; display: flex; flex-direction: column; border-color: var(--border); border-radius: 10px; background: var(--muted); box-shadow: var(--shadow-md); }
+.source-panel__editor .monaco-editor-shell > div:last-child { flex: 1; min-height: 0; }
+.source-panel__editor > section > div:first-child { border-color: var(--border); background: var(--card); }
+.source-panel__editor nav { border-color: var(--border); background: var(--card); color: var(--foreground); }
+.source-panel__editor nav > div { border-color: var(--border); }
+.source-panel__editor nav button, .source-panel__editor nav select { color: var(--secondary-foreground); }
+.source-panel__editor nav button:hover, .source-panel__editor nav select:hover { background: var(--accent); color: var(--accent-foreground); }
+
+/* Source editor menu */
+.source-panel__editor-menu { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.source-panel__heading { display: flex; align-items: center; gap: 8px; padding-left: 4px; }
+.source-panel__heading strong { font-size: 11px; }
+.source-panel__kicker { color: var(--muted-foreground); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; }
+.source-panel__dirty { padding: 2px 6px; border-radius: 999px; background: color-mix(in srgb, var(--warning) 14%, transparent); color: var(--warning); font-size: 9px; font-weight: 700; }
+.source-panel__error { max-height: 72px; overflow: auto; padding: 8px 12px; background: color-mix(in srgb, var(--destructive) 12%, var(--background)); color: var(--destructive); font: 10px/1.4 monospace; border-top: 1px solid var(--destructive); white-space: pre-wrap; }

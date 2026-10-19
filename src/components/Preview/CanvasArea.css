@@ -1,0 +1,104 @@
+/* ==========================================================================
+   Canvas Shell
+   ========================================================================== */
+
+.canvas-area {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+/* Canvas Toolbar and Layout Role
+   ========================================================================== */
+
+.canvas-area__toolbar {
+  height: 52px;
+  flex: none;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    180deg,
+    var(--card) 0%,
+    var(--card) 100%
+  );
+  color: var(--secondary-foreground);
+  font-size: 11px;
+  box-shadow: var(--shadow-sm);
+}
+
+.canvas-area__layout-role {
+  margin-left: auto;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 8%, transparent),
+    0 0 18px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.canvas-area__layout-role--item {
+  border-color: color-mix(in srgb, var(--warning) 55%, transparent);
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+.canvas-area__layout-role--both {
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+/* Scrollable Viewport and Preview Frame
+   ========================================================================== */
+
+.canvas-area__scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  padding: 36px;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 38%),
+    radial-gradient(var(--border) 0.75px, transparent 0.75px);
+  background-size:
+    100% 100%,
+    18px 18px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.canvas-area__frame {
+  width: min(100%, 1080px);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+  border-radius: 2px;
+  padding: 10px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card) 92%, var(--card-foreground) 8%),
+    var(--card)
+  );
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in srgb, var(--foreground) 4%, transparent),
+    0 0 60px color-mix(in srgb, var(--primary) 12%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+/* Canvas toolbar content */
+.canvas-area__toolbar > div { display: flex; align-items: center; gap: 7px; }
+.canvas-area__preview-title { color: var(--foreground); font-weight: 700; letter-spacing: -0.01em; }
+.canvas-area__preview-title svg { color: var(--primary); }
+.canvas-area__selection-crumb { min-width: 0; padding-left: 18px; border-left: 1px solid var(--border); }
+.canvas-area__selection-crumb span { color: var(--muted-foreground); }
+.canvas-area__selection-crumb code { max-width: 260px; overflow: hidden; color: var(--primary); font: 600 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.canvas-area__status-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 10%, transparent), 0 0 14px color-mix(in srgb, var(--success) 40%, transparent); }

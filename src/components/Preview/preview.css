@@ -1,0 +1,198 @@
+/* ==========================================================================
+   Preview Component Tokens
+   --------------------------------------------------------------------------
+   Only preview-specific visual roles receive component tokens. Generic
+   surfaces, text, borders, and shadows consume semantic tokens directly.
+   ========================================================================== */
+
+:host {
+  --preview-badge-foreground: var(--primary-foreground);
+  --preview-badge-border: color-mix(in srgb, var(--primary-foreground) 22%, transparent);
+  --preview-badge-background: linear-gradient(135deg, var(--layout-selection), var(--layout-role-both));
+  --preview-badge-shadow: 0 6px 18px color-mix(in srgb, var(--layout-selection) 28%, transparent);
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Preview Root and Box Sizing
+   ========================================================================== */
+
+#preview-root {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+#preview-root *,
+#preview-root *::before,
+#preview-root *::after {
+  box-sizing: border-box;
+}
+
+/* Editor Interaction Targets
+   ========================================================================== 
+ *
+ * Every editor-managed element can be selected.
+ *
+ * Don't give every element a permanent outline because
+ * that makes the preview impossible to read.
+ */
+[data-editor-id] {
+  position: relative;
+  transition:
+    outline-color 140ms ease,
+    box-shadow 140ms ease,
+    filter 140ms ease;
+}
+
+/* Layout Role Defaults
+   ========================================================================== 
+ *
+ * Theme defaults apply only after dynamic role metadata is attached.
+ * Preset CSS is injected after this stylesheet, so authored background,
+ * border, color and shadow declarations naturally override these values.
+ */
+:where([data-layout-role="container"]) {
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  box-shadow: var(--shadow-md);
+}
+
+:where([data-layout-role="item"]),
+:where([data-layout-role="both"]) {
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hover and Selection
+   ========================================================================== */
+
+[data-editor-id]:not(.preview-selected):hover {
+  outline: 1px solid color-mix(in srgb, var(--layout-role-container) 75%, transparent) !important;
+  outline-offset: -1px;
+  box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--layout-role-container) 5%, transparent);
+  cursor: pointer;
+}
+
+[data-editor-id].preview-selected {
+  outline: 2px solid var(--layout-selection) !important;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--layout-selection) 26%, transparent),
+    0 0 22px color-mix(in srgb, var(--layout-selection) 32%, transparent) !important;
+}
+
+/* Selected Role Badge
+   ========================================================================== */
+
+[data-editor-id].preview-selected::before {
+  content: attr(data-layout-role);
+  position: absolute;
+  z-index: 2147483647;
+  top: -15px;
+  right: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--preview-badge-border);
+  background: var(--preview-badge-background);
+  color: var(--preview-badge-foreground);
+  box-shadow:
+    var(--preview-badge-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--preview-badge-foreground) 18%, transparent);
+  font:
+    700 9px/1.4 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+[data-editor-id][data-layout-role="none"].preview-selected::before {
+  display: none;
+}
+
+/* Selected Layout Roles
+   ========================================================================== 
+ *
+ * Selected element establishes layout for children.
+ */
+[data-editor-id].preview-layout-container {
+  outline-color: var(--layout-role-container) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--layout-role-container) 25%, transparent),
+    0 0 24px color-mix(in srgb, var(--layout-role-container) 26%, transparent) !important;
+}
+
+/*
+ * Selected element participates in its parent's
+ * flex/grid layout.
+ */
+[data-editor-id].preview-layout-item {
+  outline-color: var(--layout-role-item) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--layout-role-item) 25%, transparent),
+    0 0 24px color-mix(in srgb, var(--layout-role-item) 25%, transparent) !important;
+}
+
+/*
+ * The element is both:
+ *
+ * - a flex/grid item
+ * - a flex/grid container
+ */
+[data-editor-id].preview-layout-both {
+  outline-color: var(--layout-role-both) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--layout-role-both) 28%, transparent),
+    0 0 26px color-mix(in srgb, var(--layout-role-both) 30%, transparent) !important;
+}
+
+/* Related Parent and Sibling Elements
+   ========================================================================== */
+
+.preview-layout-parent {
+  outline: 1px dashed color-mix(in srgb, var(--layout-role-item) 85%, transparent) !important;
+  outline-offset: 6px;
+}
+
+[data-editor-id].preview-related-item {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--layout-role-container) 55%, transparent);
+}
+
+[data-editor-id].preview-related-item::before {
+  content: "";
+  position: absolute;
+  z-index: 2147483646;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--layout-role-container) 8%, transparent),
+    color-mix(in srgb, var(--layout-selection) 5%, transparent)
+  );
+  pointer-events: none;
+}
+
+/* Layout Container Children
+   ========================================================================== 
+ *
+ * Subtle visual indication of the children belonging
+ * to the currently selected layout container.
+ */
+[data-layout-container="flex"] > [data-editor-id],
+[data-layout-container="inline-flex"] > [data-editor-id] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--layout-role-container) 18%, transparent);
+}
+
+[data-layout-container="grid"] > [data-editor-id],
+[data-layout-container="inline-grid"] > [data-editor-id] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--layout-role-both) 18%, transparent);
+}

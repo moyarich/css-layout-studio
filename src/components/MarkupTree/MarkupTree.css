@@ -1,0 +1,8 @@
+/* Markup tree */
+.markup-tree { padding: 8px 6px; }
+.markup-tree__row { width: 100%; height: 27px; display: flex; gap: 3px; align-items: center; border: 0; color: var(--secondary-foreground); background: transparent; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 10.5px; text-align: left; }
+.markup-tree__row:hover { background: var(--accent); color: var(--accent-foreground); }
+.markup-tree__row.is-selected { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--foreground); }
+.markup-tree__spacer { opacity: 0; }
+.markup-tree__tag-bracket { color: var(--muted-foreground); }
+.markup-tree__tag-name { color: var(--primary); }

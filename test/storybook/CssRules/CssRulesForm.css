@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Form Shell
+   ========================================================================== */
+
+.css-rules-form-shell {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 82%, var(--primary) 18%);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 34%),
+    var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+/* Form Header
+   ========================================================================== */
+
+.css-rules-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--foreground) 4%, transparent), transparent);
+}
+
+.css-rules-form-header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.css-rules-form-header span:first-child {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.css-rules-form-header h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.025em;
+}
+
+.css-rules-count {
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Form Content and Fields
+   ========================================================================== */
+
+.css-rules-form {
+  padding: 22px 24px 28px;
+}
+
+.css-rules-form fieldset {
+  min-width: 0;
+}
+
+.css-rules-form fieldset > legend,
+.css-rules-form [id$="__title"] {
+  color: var(--foreground);
+  font-weight: 700;
+  letter-spacing: -.015em;
+}
+
+.css-rules-form .flex.flex-col.gap-2 {
+  gap: .8rem;
+}
+
+.css-rules-form .p-0\.5 {
+  padding: 0;
+}
+
+.css-rules-form label {
+  color: color-mix(in oklab, var(--foreground) 88%, var(--muted-foreground));
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.css-rules-form input,
+.css-rules-form textarea,
+.css-rules-form button[role="combobox"] {
+  min-height: 38px;
+  border-color: color-mix(in oklab, var(--input) 82%, var(--primary) 18%);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+/* Interactive Field States
+   ========================================================================== */
+
+.css-rules-form input:hover,
+.css-rules-form textarea:hover,
+.css-rules-form button[role="combobox"]:hover {
+  border-color: color-mix(in srgb, var(--primary) 48%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.css-rules-form input:focus-visible,
+.css-rules-form textarea:focus-visible,
+.css-rules-form button[role="combobox"]:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 18%, transparent);
+}
+
+.css-rules-form .text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+/* Specialized Value Controls
+   ========================================================================== */
+
+.css-value-control {
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.css-value-control::placeholder {
+  color: color-mix(in srgb, var(--muted-foreground) 75%, transparent);
+}
+
+.css-color-control {
+  padding-left: 34px;
+  background-image: linear-gradient(135deg, var(--primary), var(--success));
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 14px 14px;
+}

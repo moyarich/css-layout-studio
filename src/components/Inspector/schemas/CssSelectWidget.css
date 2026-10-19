@@ -1,0 +1,238 @@
+/* ==========================================================================
+   Select Field Layout
+   ========================================================================== */
+
+div > .select-widget-wrapper {
+  display: grid;
+  grid-template-columns: 0.3fr 1fr;
+  gap: 6px;
+}
+
+/* Select Trigger
+   ========================================================================== */
+
+.css-select-trigger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 31px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--foreground) 4%, transparent);
+  font-size: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 130ms ease,
+    background 130ms ease,
+    box-shadow 130ms ease;
+}
+
+.css-select-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.css-select-trigger svg {
+  color: var(--muted-foreground);
+  transition:
+    color 130ms ease,
+    transform 150ms ease;
+}
+
+.css-select-trigger[aria-expanded="true"] {
+  border-color: var(--inspector-focus-border, var(--ring));
+  background: var(--inspector-selected-background, color-mix(in srgb, var(--primary) 14%, var(--card)));
+  box-shadow: var(--inspector-focus-ring, 0 0 0 3px color-mix(in srgb, var(--ring) 18%, transparent));
+}
+
+.css-select-trigger[aria-expanded="true"] svg {
+  color: var(--primary);
+  transform: rotate(180deg);
+}
+
+.css-select-trigger:hover:not(:disabled) {
+  border-color: var(--inspector-hover-border, color-mix(in srgb, var(--primary) 46%, var(--border)));
+  background: var(--inspector-hover-background, var(--accent));
+  color: var(--inspector-hover-foreground, var(--accent-foreground));
+}
+
+.css-select-trigger:focus-visible {
+  outline: none;
+  border-color: var(--inspector-focus-border, var(--ring));
+  box-shadow: var(--inspector-focus-ring, 0 0 0 3px color-mix(in srgb, var(--ring) 18%, transparent));
+}
+
+.css-select-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.css-select-placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Select Popover
+   ========================================================================== */
+
+.css-select-popover {
+  position: fixed;
+  inset: auto;
+  top: var(--css-select-top);
+  left: var(--css-select-left);
+  width: var(--css-select-width);
+  max-width: calc(100vw - 20px);
+  max-height: min(320px, var(--css-select-max-height));
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  border-radius: 11px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow:
+    var(--shadow-lg),
+    0 12px 34px color-mix(in srgb, var(--background) 35%, transparent);
+  transform-origin: top center;
+}
+
+.css-select-popover[data-placement="top"] {
+  transform-origin: bottom center;
+}
+
+.css-select-popover::backdrop {
+  background: transparent;
+}
+
+.css-select-popover:popover-open {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  animation: css-select-enter 130ms ease-out;
+}
+
+.css-select-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 35px;
+  padding: 7px 9px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  background: linear-gradient(180deg, var(--card), var(--card));
+}
+
+.css-select-popover-header span {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 9.5px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.css-select-popover-header small {
+  flex: none;
+  padding: 2px 5px;
+  border: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  font-size: 7.5px;
+}
+
+/* Option List
+   ========================================================================== */
+
+.css-select-options {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.css-select-options button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 6px;
+  min-height: 31px;
+  padding: 6px 7px 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--secondary-foreground);
+  font-size: 9.5px;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 100ms ease,
+    background 100ms ease,
+    color 100ms ease;
+}
+
+.css-select-options button > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.css-select-check {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border-radius: 999px;
+}
+
+.css-select-options button:hover,
+.css-select-options button:focus-visible {
+  outline: none;
+  border-color: var(--inspector-hover-border, var(--border));
+  background: var(--inspector-hover-background, var(--accent));
+  color: var(--inspector-hover-foreground, var(--accent-foreground));
+}
+
+.css-select-options button[aria-selected="true"] {
+  border-color: var(--inspector-selected-border, color-mix(in srgb, var(--primary) 42%, var(--border)));
+  background: var(--inspector-selected-background, color-mix(in srgb, var(--primary) 14%, var(--card)));
+  color: var(--inspector-selected-foreground, var(--foreground));
+  font-weight: 700;
+}
+
+.css-select-options button[aria-selected="true"] .css-select-check {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+/* Motion and Accessibility
+   ========================================================================== */
+
+@keyframes css-select-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .css-select-popover:popover-open {
+    animation: none;
+  }
+  .css-select-trigger,
+  .css-select-options button {
+    transition: none;
+  }
+}

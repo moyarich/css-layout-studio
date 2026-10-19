@@ -1,0 +1,98 @@
+/* ==========================================================================
+   Framework Sources
+   ========================================================================== */
+
+@import "tailwindcss";
+@source "../node_modules/@rjsf/shadcn/src";
+
+/* Semantic Theme Tokens
+   --------------------------------------------------------------------------
+   This is the public design-system API. Components consume these names
+   directly so a theme can replace values without changing component CSS.
+   ========================================================================== */
+
+:root {
+  --radius: 0.625rem;
+  --background: #f3f5f9;
+  --foreground: #172033;
+  --card: #ffffff;
+  --card-foreground: #172033;
+  --popover: #ffffff;
+  --popover-foreground: #172033;
+  --primary: #6d5dfc;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2f7;
+  --secondary-foreground: #566176;
+  --muted: #eef2f7;
+  --muted-foreground: #7a8497;
+  --accent: #e8edf5;
+  --accent-foreground: #172033;
+  --destructive: #dc4561;
+  --destructive-foreground: #ffffff;
+  --border: #d8dee9;
+  --input: #d8dee9;
+  --ring: #6d5dfc;
+  --success: #16a36a;
+  --success-foreground: #ffffff;
+  --warning: #b86b00;
+  --warning-foreground: #ffffff;
+  --layout-selection: #6d5dfc;
+  --layout-role-container: #0284c7;
+  --layout-role-item: #d97706;
+  --layout-role-both: #9333ea;
+  --shadow-sm: 0 2px 8px rgb(30 41 59 / 8%);
+  --shadow-md: 0 12px 32px rgb(30 41 59 / 12%);
+  --shadow-lg: 0 24px 64px rgb(30 41 59 / 16%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  color-scheme: light;
+}
+
+/* Dark Theme Tokens
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+  --background: #080808;
+  --foreground: #f2f2f2;
+  --card: #181818;
+  --card-foreground: #f1f1f1;
+  --popover: #181818;
+  --popover-foreground: #f1f1f1;
+  --primary: #b4a9ff;
+  --primary-foreground: #101010;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #b5b5b5;
+  --muted: #1e1e1e;
+  --muted-foreground: #858585;
+  --accent: #252525;
+  --accent-foreground: #f1f1f1;
+  --destructive: #ef8e9b;
+  --destructive-foreground: #101010;
+  --border: #303030;
+  --input: #303030;
+  --ring: #b4a9ff;
+  --success: #79d7a5;
+  --success-foreground: #101010;
+  --warning: #e9bd69;
+  --warning-foreground: #101010;
+  --layout-selection: #9b8cff;
+  --layout-role-container: #38bdf8;
+  --layout-role-item: #fbbf24;
+  --layout-role-both: #c084fc;
+  --shadow-sm: 0 2px 8px rgb(0 0 0 / 28%);
+  --shadow-md: 0 18px 44px rgb(0 0 0 / 48%);
+  --shadow-lg: 0 24px 64px rgb(0 0 0 / 58%);
+  color-scheme: dark;
+}
+
+/* Global Reset and Document Defaults
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-width: 1180px; min-height: 100%; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: 0.42; }

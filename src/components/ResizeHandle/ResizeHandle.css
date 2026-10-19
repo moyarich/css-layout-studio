@@ -1,0 +1,12 @@
+/* Resizable pane handle */
+.resize-handle { position: relative; z-index: 20; display: grid; place-items: center; background: var(--muted); outline: none; touch-action: none; }
+.resize-handle::before { content: ""; position: absolute; background: var(--border); transition: background 120ms ease, box-shadow 120ms ease; }
+.resize-handle span { position: relative; z-index: 1; border-radius: 999px; background: var(--muted-foreground); opacity: 0; transition: opacity 120ms ease; }
+.resize-handle:hover::before, .resize-handle:focus-visible::before, .resize-handle[data-dragging="true"]::before { background: var(--primary); box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 12%, transparent); }
+.resize-handle:hover span, .resize-handle:focus-visible span, .resize-handle[data-dragging="true"] span { opacity: 0.8; }
+.resize-handle--vertical { cursor: col-resize; }
+.resize-handle--vertical::before { inset: 0 2px; width: 1px; }
+.resize-handle--vertical span { width: 2px; height: 34px; }
+.resize-handle--horizontal { cursor: row-resize; }
+.resize-handle--horizontal::before { inset: 2px 0; height: 1px; }
+.resize-handle--horizontal span { width: 34px; height: 2px; }
