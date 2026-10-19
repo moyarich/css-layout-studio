@@ -1,23 +1,48 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { ComponentProps, CSSProperties } from "react";
+import { zipSync, strToU8 } from "fflate";
+import { DocumentationPreviewContext } from "./components/Preview/DocumentationPreview";
 import type { Rule } from "css-tree";
 import {
-  Braces,
-  Code2,
+  Boxes,
   Copy,
-  ExternalLink,
-  Globe2,
+  Download,
+  Search,
+  ChevronRight,
+  ChevronDown,
+  BookOpen,
+  Layers,
+  LayoutGrid,
+  FileCode2,
+  FileText,
   Moon,
-  PanelLeft,
-  Sparkles,
   Sun,
+  Check,
+  Play,
+  Monitor,
+  Tablet,
+  Smartphone,
+  ArrowUpRight,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { Inspector } from "./components/Inspector/Inspector";
 import { MarkupTree } from "./components/MarkupTree/MarkupTree";
 import { type SelectedPreviewElement } from "./components/Preview/Preview";
 import { CanvasArea } from "./components/Preview/CanvasArea";
-import { SourcePanel } from "./components/SourcePanel/SourcePanel";
-import { ResizeHandle } from "./components/ResizeHandle/ResizeHandle";
+const SourcePanel = lazy(async () => {
+  await import("./editor/monaco");
+  const module = await import("./components/SourcePanel/SourcePanel");
+  return { default: module.SourcePanel };
+});
+
 import "./App.css";
 import {
   appendRuleWithDeclaration,
@@ -91,45 +116,32 @@ const COMPUTED_PROPERTIES = [
   "text-align",
 ];
 
-const DEFAULT_PANE_SIZES = { left: 240, right: 320, source: 310 };
-const PANE_SIZE_STORAGE_KEY = "ast-layout-editor:pane-sizes";
+const INITIAL_PRESET =
+  PRESETS.find((preset) => preset.id === "article-flex") ?? PRESETS[0];
+const sourceFiles = [
+  "index.html",
+  "styles.css",
+  "layout.tsx",
+  "preview.tsx",
+  "page.mdx",
+  "preset.json",
+] as const;
+type SourceFile = (typeof sourceFiles)[number];
+type WorkspaceTab = "Overview" | "Playground" | "Source";
 
-function clamp(value: number, minimum: number, maximum: number) {
-  return Math.min(maximum, Math.max(minimum, value));
-}
-
-function maximumSourceHeight() {
-  return Math.max(180, Math.min(620, window.innerHeight - 284));
-}
-
-function initialPaneSizes() {
-  try {
-    const stored = JSON.parse(
-      localStorage.getItem(PANE_SIZE_STORAGE_KEY) ?? "null",
-    );
-    return {
-      left: clamp(Number(stored?.left) || DEFAULT_PANE_SIZES.left, 170, 460),
-      right: clamp(Number(stored?.right) || DEFAULT_PANE_SIZES.right, 260, 560),
-      source: clamp(
-        Number(stored?.source) || DEFAULT_PANE_SIZES.source,
-        180,
-        maximumSourceHeight(),
-      ),
-    };
-  } catch {
-    return DEFAULT_PANE_SIZES;
-  }
+function layoutName(name: string) {
+  return name.replace(/\s*-\s*(Flex|Grid)$/i, "");
 }
 
 export default function App() {
-  const [presetId, setPresetId] = useState(PRESETS[0].id);
+  const [presetId, setPresetId] = useState(INITIAL_PRESET.id);
   const [document, setDocument] = useState<EditorDocument>(() =>
-    createEditorDocument(PRESETS[0]),
+    createEditorDocument(INITIAL_PRESET),
   );
   // Keep the authored/formatted editor buffer separate from the executable
   // AST. Regenerating this string from css-tree on every render minifies it and
   // can overwrite Monaco while the user is typing.
-  const [cssSource, setCssSource] = useState(PRESETS[0].css.trim());
+  const [cssSource, setCssSource] = useState(INITIAL_PRESET.css.trim());
   const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
     null,
   );
@@ -137,13 +149,24 @@ export default function App() {
     useState<SelectedPreviewElement | null>(null);
   const [computed, setComputed] = useState<ComputedSnapshot>({});
   const [sourceError, setSourceError] = useState<SourceError>(null);
-  const [sourceOpen, setSourceOpen] = useState(true);
-  const [paneSizes, setPaneSizes] = useState(initialPaneSizes);
-  const [theme, setTheme] = useState<EditorTheme>(() =>
-    window.matchMedia?.("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark",
+  const [tab, setTab] = useState<WorkspaceTab>("Overview");
+  const [sourceFile, setSourceFile] = useState<SourceFile>("styles.css");
+  const [railTab, setRailTab] = useState<"Inspector" | "Outline">("Inspector");
+  const [query, setQuery] = useState("");
+  const [collapsed, setCollapsed] = useState<Set<string>>(
+    () =>
+      new Set(
+        PRESETS.filter(
+          (preset) =>
+            `${preset.source}/${preset.path.split("/")[0]}` !==
+            `${INITIAL_PRESET.source}/${INITIAL_PRESET.path.split("/")[0]}`,
+        ).map((preset) => `${preset.source}/${preset.path.split("/")[0]}`),
+      ),
   );
+  const [device, setDevice] = useState("fluid");
+  const [notice, setNotice] = useState("");
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [theme, setTheme] = useState<EditorTheme>("light");
 
   useEffect(() => {
     window.document.documentElement.dataset.theme = theme;
@@ -151,20 +174,6 @@ export default function App() {
       delete window.document.documentElement.dataset.theme;
     };
   }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem(PANE_SIZE_STORAGE_KEY, JSON.stringify(paneSizes));
-  }, [paneSizes]);
-
-  useEffect(() => {
-    const fitPanesToViewport = () =>
-      setPaneSizes((current) => ({
-        ...current,
-        source: clamp(current.source, 180, maximumSourceHeight()),
-      }));
-    window.addEventListener("resize", fitPanesToViewport);
-    return () => window.removeEventListener("resize", fitPanesToViewport);
-  }, []);
 
   const htmlSource = useMemo(
     () => serializeHtml(document.htmlAst),
@@ -268,6 +277,10 @@ export default function App() {
     setDocument(createEditorDocument(preset));
     setCssSource(preset.css.trim());
     setSourceError(null);
+    setSelectedElement(null);
+    setPreviewSelection(null);
+    setComputed({});
+    setLibraryOpen(false);
   };
 
   const applyHtmlSource = (source: string) => {
@@ -306,141 +319,175 @@ export default function App() {
     }
   };
 
+  const groups = useMemo(() => {
+    const categories = new Map<
+      string,
+      { label: string; layouts: Map<string, typeof PRESETS> }
+    >();
+    for (const preset of PRESETS) {
+      const parts = preset.path.split("/");
+      const categoryKey = `${preset.source}/${parts[0]}`;
+      const layoutKey = `${categoryKey}/${parts.slice(1, -1).join("/")}`;
+      if (!categories.has(categoryKey))
+        categories.set(categoryKey, {
+          label: preset.editor?.category ?? parts[0],
+          layouts: new Map(),
+        });
+      const layouts = categories.get(categoryKey)!.layouts;
+      if (!layouts.has(layoutKey)) layouts.set(layoutKey, []);
+      layouts.get(layoutKey)!.push(preset);
+    }
+    return [...categories].map(([key, category]) => ({
+      key,
+      label: category.label,
+      layouts: [...category.layouts].map(([key, variants]) => ({
+        key,
+        variants,
+        name: layoutName(variants[0].name),
+      })),
+    }));
+  }, []);
+  const activeLayout = groups
+    .flatMap((group) => group.layouts)
+    .find((layout) =>
+      layout.variants.some((preset) => preset.id === presetId),
+    )!;
+  const activeCategory = groups.find((group) =>
+    group.layouts.includes(activeLayout),
+  );
+  const Page = activePreset.Page;
+  const sourceValue =
+    sourceFile === "index.html"
+      ? htmlSource
+      : sourceFile === "styles.css"
+        ? cssSource
+        : (activePreset.sources[sourceFile] ?? "");
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(() => setNotice(""), 3000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
   const copyExport = async () => {
-    await navigator.clipboard.writeText(
-      `<style>\n${cssSource}\n</style>\n${htmlSource}`,
-    );
+    try {
+      await navigator.clipboard.writeText(
+        `<style>\n${cssSource}\n</style>\n${htmlSource}`,
+      );
+      setNotice("Code copied to clipboard");
+    } catch {
+      setNotice("Clipboard unavailable. Use Export folder to save the code.");
+    }
   };
-
-  return (
-    <div className="app-shell" data-theme={theme}>
-      <header className="app-shell__header">
-        <div className="app-shell__brand-lockup">
-          <div className="app-shell__brand-icon">
-            <Sparkles size={17} />
-          </div>
-          <div>
-            <strong>AST Layout Editor</strong>
-            <span>HAST + CSS Tree</span>
-          </div>
-        </div>
-        <div className="app-shell__header-actions">
-          <button
-            className={`app-shell__toolbar-button app-shell__theme-toggle`}
-            onClick={() =>
-              setTheme((current) => (current === "dark" ? "light" : "dark"))
-            }
-            title={`Use ${theme === "dark" ? "light" : "dark"} theme`}
-            aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}
-          >
-            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+  const exportFolder = () => {
+    const files: Record<string, Uint8Array> = {};
+    const folder = activePreset.path.split("/").slice(-2).join("/");
+    for (const name of sourceFiles) {
+      // Keep the exported preview independent of the editor's documentation context.
+      let value =
+        name === "index.html"
+          ? htmlSource
+          : name === "styles.css"
+            ? cssSource
+            : (activePreset.sources[name] ?? "");
+      if (name === "preview.tsx")
+        value = value
+          .replace(/^import .*useContext.*\n/gm, "")
+          .replace(/^import .*DocumentationPreviewContext.*\n/gm, "")
+          .replace(
+            /^\s*const livePreview = useContext.*\n\s*if \(livePreview\)\s*return livePreview;\n/gm,
+            "",
+          );
+      files[`${folder}/${name}`] = strToU8(value);
+    }
+    const bytes = zipSync(files);
+    const url = URL.createObjectURL(
+      new Blob([new Uint8Array(bytes)], { type: "application/zip" }),
+    );
+    const link = window.document.createElement("a");
+    link.href = url;
+    link.download = `${activePreset.id}.zip`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setNotice("Preset folder exported");
+  };
+  const showSource = (file: SourceFile) => {
+    setSourceFile(file);
+    setTab("Source");
+  };
+  const mdxComponents = {
+    h1: () => null,
+    a: ({ href, children, ...props }: ComponentProps<"a">) => {
+      const file = href?.replace(/^.\//, "") as SourceFile;
+      if (sourceFiles.includes(file))
+        return (
+          <button className="doc-source-link" onClick={() => showSource(file)}>
+            {children}
+            <FileCode2 size={13} />
           </button>
-          <select
-            className="app-shell__preset-select"
-            value={presetId}
-            onChange={(event) => loadPreset(event.target.value)}
-          >
-            {PRESETS.map((preset) => (
-              <option value={preset.id} key={preset.id}>
-                {preset.name}
-              </option>
+        );
+      return (
+        <a {...props} href={href} target="_blank" rel="noopener noreferrer">
+          {children}
+          <ArrowUpRight size={13} />
+        </a>
+      );
+    },
+  };
+  const livePreview = (
+    <section className="live-card" aria-label="Interactive layout preview">
+      <div className="live-toolbar">
+        <strong>
+          <Play size={16} /> Live preview
+        </strong>
+        <div className="preview-controls">
+          <div className="segmented" aria-label="Layout implementation">
+            {activeLayout.variants.map((variant) => (
+              <button
+                key={variant.id}
+                aria-pressed={variant.id === presetId}
+                onClick={() => loadPreset(variant.id)}
+              >
+                {variant.type === "flex"
+                  ? "Flexbox"
+                  : variant.type === "grid"
+                    ? "Grid"
+                    : variant.name}
+              </button>
             ))}
-          </select>
-          <button
-            className="app-shell__toolbar-button"
-            onClick={() => setSourceOpen((open) => !open)}
-          >
-            <Code2 size={15} /> Source
-          </button>
-          <button
-            className={`app-shell__toolbar-button is-primary`}
-            onClick={copyExport}
-          >
-            <Copy size={15} /> Copy export
-          </button>
+          </div>
+          <div className="segmented devices" aria-label="Preview viewport">
+            {[
+              { id: "fluid", label: "Desktop", Icon: Monitor },
+              { id: "768", label: "Tablet", Icon: Tablet },
+              { id: "375", label: "Phone", Icon: Smartphone },
+            ].map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                title={label}
+                aria-label={label}
+                aria-pressed={device === id}
+                onClick={() => setDevice(id)}
+              >
+                <Icon size={16} />
+              </button>
+            ))}
+          </div>
+          <span className="viewport-label">
+            {device === "fluid" ? "Responsive" : `${device} px`}
+          </span>
         </div>
-      </header>
-
-      <main
-        className={`app-shell__editor-grid ${sourceOpen ? "has-source" : ""}`}
+      </div>
+      <div
+        className="live-viewport"
+        data-device={device}
         style={
           {
-            "--left-pane-width": `${paneSizes.left}px`,
-            "--right-pane-width": `${paneSizes.right}px`,
-            "--source-pane-height": `${paneSizes.source}px`,
+            "--viewport-width": device === "fluid" ? "100%" : `${device}px`,
           } as CSSProperties
         }
       >
-        {"<!-- Sidebar-- ->"}
-        <aside className="app-shell__left-rail">
-          <div className="app-shell__panel-heading">
-            <div>
-              <span className="app-shell__panel-kicker">Document</span>
-              <strong>Markup tree</strong>
-            </div>
-            <PanelLeft size={15} />
-          </div>
-          <MarkupTree
-            root={document.htmlAst}
-            selectedId={document.selectedNodeId}
-            onSelect={selectNode}
-          />
-          <div className="app-shell__architecture-note">
-            <Braces size={15} />
-            <p>
-              <strong>No parallel layout model.</strong> The tree above is the
-              HAST document itself.
-            </p>
-          </div>
-          <section
-            className="app-shell__in-the-wild"
-            aria-labelledby="in-the-wild-title"
-          >
-            <div className="app-shell__in-the-wild-heading">
-              <Globe2 size={14} aria-hidden="true" />
-              <strong id="in-the-wild-title">In the wild</strong>
-            </div>
-            <ul>
-              {(activePreset.inTheWild ?? []).map((example) => (
-                <li key={`${example.name}-${example.url ?? "unlinked"}`}>
-                  {example.url ? (
-                    <a
-                      href={example.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span>{example.name}</span>
-                      <ExternalLink size={11} aria-hidden="true" />
-                    </a>
-                  ) : (
-                    <span>{example.name}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </aside>
-
-        <ResizeHandle
-          className="app-shell__left-resize-handle"
-          orientation="vertical"
-          label="Resize document tree"
-          onResize={(delta) =>
-            setPaneSizes((current) => ({
-              ...current,
-              left: clamp(current.left + delta, 170, 460),
-            }))
-          }
-          onReset={() =>
-            setPaneSizes((current) => ({
-              ...current,
-              left: DEFAULT_PANE_SIZES.left,
-            }))
-          }
-        />
-
         <CanvasArea
-          className="app-shell__canvas-pane"
           html={previewHtml}
           css={previewCss}
           selectedId={document.selectedNodeId}
@@ -452,88 +499,413 @@ export default function App() {
           onSelect={selectNode}
           onSelectedElement={refreshComputed}
         />
-
-        <ResizeHandle
-          className="app-shell__right-resize-handle"
-          orientation="vertical"
-          label="Resize inspector"
-          onResize={(delta) =>
-            setPaneSizes((current) => ({
-              ...current,
-              right: clamp(current.right - delta, 260, 560),
-            }))
+      </div>
+      <div className="live-footer">
+        <span>
+          <span className="status-dot" /> Click a region to inspect its styles
+        </span>
+        <code>
+          {selectedHastElement
+            ? preferredSelector(selectedHastElement)
+            : ".container"}
+        </code>
+      </div>
+    </section>
+  );
+  const sourceTabs = (
+    <div className="file-tabs" aria-label="Source files">
+      {sourceFiles.map((file) => (
+        <button
+          key={file}
+          className={sourceFile === file ? "active" : ""}
+          onClick={() => setSourceFile(file)}
+        >
+          {file}
+        </button>
+      ))}
+      <button
+        className="file-copy"
+        aria-label="Copy current file"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(sourceValue);
+            setNotice("File copied");
+          } catch {
+            setNotice("Clipboard unavailable");
           }
-          onReset={() =>
-            setPaneSizes((current) => ({
-              ...current,
-              right: DEFAULT_PANE_SIZES.right,
-            }))
-          }
-        />
+        }}
+      >
+        <Copy size={14} />
+      </button>
+    </div>
+  );
 
-        <aside className="app-shell__right-rail">
-          <Inspector
-            cssAst={document.cssAst}
-            revision={document.revision}
-            selectedElement={selectedElement}
-            computed={computed}
-            preferredRule={preferredRule}
-            layout={previewSelection?.layout ?? null}
-            onChange={editDeclaration}
-            onReset={resetDeclaration}
-          />
-        </aside>
-
-        {sourceOpen ? (
-          <>
-            <ResizeHandle
-              className="app-shell__source-resize-handle"
-              orientation="horizontal"
-              label="Resize source editors"
-              onResize={(delta) =>
-                setPaneSizes((current) => ({
-                  ...current,
-                  source: clamp(
-                    current.source - delta,
-                    180,
-                    maximumSourceHeight(),
-                  ),
-                }))
-              }
-              onReset={() =>
-                setPaneSizes((current) => ({
-                  ...current,
-                  source: DEFAULT_PANE_SIZES.source,
-                }))
-              }
+  return (
+    <div className="app-shell studio" data-theme={theme}>
+      <header className="studio-header">
+        <a
+          className="studio-brand"
+          href="#"
+          onClick={(event) => {
+            event.preventDefault();
+            setTab("Overview");
+          }}
+        >
+          <Boxes size={26} />
+          <strong>Layout Studio</strong>
+        </a>
+        <div className="studio-breadcrumb">
+          <Layers size={16} />
+          <ChevronRight size={14} />
+          <span>{activeCategory?.label}</span>
+          <span>/</span>
+          <strong>{activeLayout.name}</strong>
+        </div>
+        <div className="studio-actions">
+          <button
+            className="icon-button mobile-library-toggle"
+            aria-label="Toggle layout library"
+            onClick={() => setLibraryOpen(!libraryOpen)}
+          >
+            {libraryOpen ? (
+              <PanelLeftClose size={18} />
+            ) : (
+              <PanelLeftOpen size={18} />
+            )}
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Toggle color theme"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          >
+            {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
+          <button className="studio-button copy-button" onClick={copyExport}>
+            <Copy size={15} />
+            Copy code
+          </button>
+          <button className="studio-button primary" onClick={exportFolder}>
+            <Download size={15} />
+            Export folder
+          </button>
+        </div>
+      </header>
+      <div className="studio-workspace">
+        <aside
+          className={`library ${libraryOpen ? "is-open" : ""}`}
+          aria-label="Layout library"
+        >
+          <div className="library-search">
+            <Search size={16} />
+            <input
+              aria-label="Search layouts"
+              placeholder="Search layouts…"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
             />
-            <section className="app-shell__source-dock">
-              <SourcePanel
-                label="HTML"
-                language="html"
-                theme={theme}
-                value={htmlSource}
-                onApply={applyHtmlSource}
-                error={
-                  sourceError?.panel === "html"
-                    ? sourceError.message
-                    : undefined
-                }
+            <kbd>⌕</kbd>
+          </div>
+          <p className="eyebrow">Layout library</p>
+          <nav className="library-nav">
+            {groups.map((group) => {
+              const layouts = group.layouts.filter((layout) =>
+                `${group.label} ${layout.name}`
+                  .toLowerCase()
+                  .includes(query.toLowerCase()),
+              );
+              if (!layouts.length) return null;
+              const open = query.length > 0 || !collapsed.has(group.key);
+              return (
+                <section key={group.key} className="library-group">
+                  <button
+                    className="category-button"
+                    aria-expanded={open}
+                    onClick={() =>
+                      setCollapsed((current) => {
+                        const next = new Set(current);
+                        next.has(group.key)
+                          ? next.delete(group.key)
+                          : next.add(group.key);
+                        return next;
+                      })
+                    }
+                  >
+                    <BookOpen size={17} />
+                    <span>{group.label}</span>
+                    <span className="category-count">
+                      {group.layouts.length}
+                    </span>
+                    {open ? (
+                      <ChevronDown size={14} />
+                    ) : (
+                      <ChevronRight size={14} />
+                    )}
+                  </button>
+                  {open && (
+                    <div className="library-items">
+                      {layouts.map((layout) => (
+                        <button
+                          key={layout.key}
+                          className={
+                            layout.key === activeLayout.key ? "selected" : ""
+                          }
+                          aria-current={
+                            layout.key === activeLayout.key ? "page" : undefined
+                          }
+                          onClick={() =>
+                            loadPreset(
+                              (
+                                layout.variants.find(
+                                  (variant) =>
+                                    variant.type === activePreset.type,
+                                ) ?? layout.variants[0]
+                              ).id,
+                            )
+                          }
+                        >
+                          <LayoutGrid size={15} />
+                          <span>{layout.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+            {!groups.some((group) =>
+              group.layouts.some((layout) =>
+                `${group.label} ${layout.name}`
+                  .toLowerCase()
+                  .includes(query.toLowerCase()),
+              ),
+            ) && (
+              <p className="empty-search">
+                No layouts found. Try another name.
+              </p>
+            )}
+          </nav>
+          <footer className="library-footer">
+            <span>
+              {PRESETS.length} presets ·{" "}
+              {groups.reduce((sum, group) => sum + group.layouts.length, 0)}{" "}
+              layouts
+            </span>
+            <Layers size={15} />
+          </footer>
+        </aside>
+        <main className={`studio-main tab-${tab.toLowerCase()}`}>
+          <div className="page-heading">
+            <span className="page-badge">
+              <FileText size={12} />
+              page.mdx
+            </span>
+            <h1>{activeLayout.name}</h1>
+            <p>{activePreset.description}</p>
+          </div>
+          <div className="workspace-tabs" role="tablist" aria-label="Workspace">
+            {(["Overview", "Playground", "Source"] as const).map((item) => (
+              <button
+                key={item}
+                role="tab"
+                aria-selected={tab === item}
+                aria-controls="workspace-panel"
+                id={`tab-${item}`}
+                onClick={() => setTab(item)}
+              >
+                {item}
+              </button>
+            ))}
+            <span className="workspace-path" title={activePreset.path}>
+              {activePreset.type === "flex" ? "Flexbox" : "CSS Grid"}
+            </span>
+          </div>
+          <div
+            id="workspace-panel"
+            role="tabpanel"
+            aria-labelledby={`tab-${tab}`}
+          >
+            {tab === "Overview" && (
+              <>
+                <DocumentationPreviewContext.Provider value={livePreview}>
+                  <article className="mdx-page">
+                    <Page components={mdxComponents} />
+                  </article>
+                </DocumentationPreviewContext.Provider>
+                <section className="source-peek">
+                  {sourceTabs}
+                  <pre>
+                    <code>
+                      {sourceValue.split("\n").slice(0, 8).join("\n")}
+                    </code>
+                  </pre>
+                  <button
+                    className="open-source"
+                    onClick={() => setTab("Source")}
+                  >
+                    Open source editor <ChevronRight size={14} />
+                  </button>
+                </section>
+              </>
+            )}
+            {tab === "Playground" && (
+              <>
+                {livePreview}
+                <div className="playground-note">
+                  <Layers size={18} />
+                  <div>
+                    <strong>Make it your own</strong>
+                    <p>
+                      Select any region to adjust its layout in the inspector.
+                      HTML and CSS edits update the preview immediately.
+                    </p>
+                  </div>
+                </div>
+                <section className="source-peek">
+                  {sourceTabs}
+                  {sourceFile === "index.html" ||
+                  sourceFile === "styles.css" ? (
+                    <div className="editor-frame">
+                      <Suspense
+                        fallback={
+                          <div className="editor-loading">
+                            Loading source editor…
+                          </div>
+                        }
+                      >
+                        <SourcePanel
+                          formatOnLoad={false}
+                          key={`${presetId}-${sourceFile}`}
+                          label={sourceFile}
+                          language={
+                            sourceFile === "index.html" ? "html" : "css"
+                          }
+                          theme={theme}
+                          value={sourceValue}
+                          onApply={
+                            sourceFile === "index.html"
+                              ? applyHtmlSource
+                              : applyCssSource
+                          }
+                          error={
+                            sourceError?.panel ===
+                            (sourceFile === "index.html" ? "html" : "css")
+                              ? sourceError.message
+                              : undefined
+                          }
+                        />
+                      </Suspense>
+                    </div>
+                  ) : (
+                    <pre>
+                      <code>{sourceValue}</code>
+                    </pre>
+                  )}
+                </section>
+              </>
+            )}
+            {tab === "Source" && (
+              <section className="source-workspace">
+                {sourceTabs}
+                {sourceFile === "index.html" || sourceFile === "styles.css" ? (
+                  <div className="editor-frame">
+                    <Suspense
+                      fallback={
+                        <div className="editor-loading">
+                          Loading source editor…
+                        </div>
+                      }
+                    >
+                      <SourcePanel
+                        formatOnLoad={false}
+                        key={`${presetId}-${sourceFile}`}
+                        label={sourceFile}
+                        language={sourceFile === "index.html" ? "html" : "css"}
+                        theme={theme}
+                        value={sourceValue}
+                        onApply={
+                          sourceFile === "index.html"
+                            ? applyHtmlSource
+                            : applyCssSource
+                        }
+                        error={
+                          sourceError?.panel ===
+                          (sourceFile === "index.html" ? "html" : "css")
+                            ? sourceError.message
+                            : undefined
+                        }
+                      />
+                    </Suspense>
+                  </div>
+                ) : (
+                  <pre className="read-only-source">
+                    <code>{sourceValue}</code>
+                  </pre>
+                )}
+                <div className="source-status">
+                  {sourceFile === "index.html" || sourceFile === "styles.css"
+                    ? "Changes apply to the live preview · Export to save your work"
+                    : "Reference source · Included in folder export"}
+                </div>
+              </section>
+            )}
+          </div>
+        </main>
+        <aside className="studio-inspector" aria-label="Layout inspector">
+          <div className="inspector-tabs">
+            {(["Inspector", "Outline"] as const).map((item) => (
+              <button
+                key={item}
+                aria-pressed={railTab === item}
+                onClick={() => setRailTab(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <div className="inspector-content">
+            {railTab === "Inspector" ? (
+              <Inspector
+                cssAst={document.cssAst}
+                revision={document.revision}
+                selectedElement={selectedElement}
+                computed={computed}
+                preferredRule={preferredRule}
+                layout={previewSelection?.layout ?? null}
+                onChange={editDeclaration}
+                onReset={resetDeclaration}
               />
-              <SourcePanel
-                label="CSS"
-                language="css"
-                theme={theme}
-                value={cssSource}
-                onApply={applyCssSource}
-                error={
-                  sourceError?.panel === "css" ? sourceError.message : undefined
-                }
-              />
-            </section>
-          </>
-        ) : null}
-      </main>
+            ) : (
+              <>
+                <div className="outline-heading">
+                  <Layers size={16} />
+                  Document outline
+                </div>
+                <MarkupTree
+                  root={document.htmlAst}
+                  selectedId={document.selectedNodeId}
+                  onSelect={selectNode}
+                />
+              </>
+            )}
+          </div>
+          <button className="about-layout" onClick={() => setTab("Overview")}>
+            <span className="about-icon">
+              <FileText size={21} />
+            </span>
+            <span>
+              <strong>About this layout</strong>
+              <small>Preview, guidance and examples from page.mdx</small>
+            </span>
+            <ChevronRight size={15} />
+          </button>
+        </aside>
+      </div>
+      {notice && (
+        <div className="studio-toast" role="status">
+          <Check size={16} />
+          {notice}
+        </div>
+      )}
     </div>
   );
 }

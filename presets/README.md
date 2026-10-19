@@ -37,7 +37,7 @@ Changes to HTML should also be reflected in `layout.tsx`; previews always use th
 6. Use `.container` as the root with `width: 100%; height: 100%;`.
 
 `registry.config.ts` defines the source directories and optional source filenames.
-The Vite plugin in `plugins/preset-registry.ts` scans those folders and exposes
+The Vite plugin in `vite-plugins/preset-registry.ts` scans those folders and exposes
 `virtual:preset-registry`. `index.ts` only re-exports the generated registry.
 
 Sorting follows the folder hierarchy: numeric prefixes first, then natural
@@ -59,7 +59,7 @@ import { PRESETS } from "./presets";
 
 Point a registry source at this directory and discover `**/page.mdx`.
 Pages use the CLI scaffold's YAML frontmatter and relative component imports.
-The editor itself does not need the runtime or MDX compilation.
+Layout Studio compiles MDX through Vite and renders these pages directly; no separate documentation app is required.
 
 ---
 
@@ -415,3 +415,15 @@ Class names are examples only. Choose names that describe the region's role in t
 Use contrasting fills for adjacent layout regions.
 
 ---
+
+## Layout Studio
+
+The app compiles each `page.mdx` as a React component. The Overview displays its
+authored documentation and embeds the same selectable preview used by the
+Playground. Documentation source links open the corresponding Source tab.
+The local `preview.tsx` reads `DocumentationPreviewContext` when displayed in the
+editor, and retains its isolated HTML/CSS preview when used independently.
+
+Export folder downloads a ZIP with all six preset files, including the current
+HTML/CSS edits. Its preview is standalone and does not import editor context.
+TSX and MDX tabs show reference sources; HTML and CSS support live editing.

@@ -6,6 +6,8 @@ import { defineConfig } from "vite";
 import path from "node:path";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
+import mdx from "@mdx-js/rollup";
+import remarkFrontmatter from "remark-frontmatter";
 import registry from "./registry.config";
 import { presetRegistryPlugin } from "./vite-plugins/preset-registry";
 const dirname =
@@ -15,7 +17,12 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [presetRegistryPlugin(registry), tailwindcss(), react()],
+  plugins: [
+    presetRegistryPlugin(registry),
+    mdx({ remarkPlugins: [remarkFrontmatter] }),
+    tailwindcss(),
+    react(),
+  ],
   css: {
     devSourcemap: true,
   },

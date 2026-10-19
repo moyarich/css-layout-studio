@@ -1,23 +1,26 @@
-import { readFile, readdir } from 'node:fs/promises';
-import { resolve, relative, sep, posix } from 'node:path';
-import type { Plugin, ViteDevServer } from 'vite';
-import type { PresetSource } from '../presets/types';
+import { readFile, readdir } from "node:fs/promises";
+import { resolve, relative, sep, posix, dirname } from "node:path";
+import type { Plugin, ViteDevServer } from "vite";
+import type { PresetSource } from "../presets/types";
 
 export interface PresetRegistryConfig {
-  sources: Record<string, {
-    base: string;
-    files?: { metadata?: string; html?: string; css?: string };
-  }>;
+  sources: Record<
+    string,
+    {
+      base: string;
+      files?: { metadata?: string; html?: string; css?: string };
+    }
+  >;
 }
 export interface PresetRegistryEntry extends PresetSource {
   source: string;
   path: string;
   files: { metadata: string; html: string; css: string };
 }
-const collator = new Intl.Collator('en', { numeric: true });
+const collator = new Intl.Collator("en", { numeric: true });
 function compareFolders(a: string, b: string): number {
-  const left = a.split('/');
-  const right = b.split('/');
+  const left = a.split("/");
+  const right = b.split("/");
   for (let i = 0; i < Math.min(left.length, right.length); i++) {
     const x = left[i].match(/^(\d+)[-_]/);
     const y = right[i].match(/^(\d+)[-_]/);
@@ -29,75 +32,178 @@ function compareFolders(a: string, b: string): number {
   return left.length - right.length || a.localeCompare(b);
 }
 function label(folder: string): string {
-  return folder.replace(/^\d+[-_]/, '').split(/[-_]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return folder
+    .replace(/^\d+[-_]/, "")
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /** Discover source folders in configured source order, then numeric folder order. */
-export async function buildPresetRegistry(config: PresetRegistryConfig, root: string, watch: (file: string) => void = () => {}): Promise<PresetRegistryEntry[]> {
+export async function buildPresetRegistry(
+  config: PresetRegistryConfig,
+  root: string,
+  watch: (file: string) => void = () => {},
+): Promise<PresetRegistryEntry[]> {
   const entries: PresetRegistryEntry[] = [];
   const ids = new Set<string>();
   for (const [source, options] of Object.entries(config.sources)) {
     const base = resolve(root, options.base);
-    const names = { metadata: 'preset.json', html: 'index.html', css: 'styles.css', ...options.files };
+    const names = {
+      metadata: "preset.json",
+      html: "index.html",
+      css: "styles.css",
+      ...options.files,
+    };
     for (const name of Object.values(names)) {
-      if (!name || name.includes('/') || name.includes('\\') || name === '..') throw Error(`Registry file names must be local basenames: ${name}`);
+      if (!name || name.includes("/") || name.includes("\\") || name === "..")
+        throw Error(`Registry file names must be local basenames: ${name}`);
     }
     const discovered: PresetRegistryEntry[] = [];
     async function walk(folder: string): Promise<void> {
       const children = await readdir(folder, { withFileTypes: true });
-      if (children.some(child => child.isFile() && child.name === names.metadata)) {
-        const files = Object.fromEntries(Object.entries(names).map(([key, name]) => [key, resolve(folder, name)])) as PresetRegistryEntry['files'];
+      if (
+        children.some(
+          (child) => child.isFile() && child.name === names.metadata,
+        )
+      ) {
+        const files = Object.fromEntries(
+          Object.entries(names).map(([key, name]) => [
+            key,
+            resolve(folder, name),
+          ]),
+        ) as PresetRegistryEntry["files"];
         Object.values(files).forEach(watch);
-        const metadata = JSON.parse(await readFile(files.metadata, 'utf8'));
-        if (!metadata || typeof metadata.id !== 'string' || !metadata.id.trim() || typeof metadata.name !== 'string' || !metadata.name.trim()) throw Error(`${files.metadata}: id and name are required`);
-        if (metadata.type !== undefined && !['flex', 'grid'].includes(metadata.type)) throw Error(`${files.metadata}: invalid layout type`);
-        if (ids.has(metadata.id)) throw Error(`Duplicate preset ID: ${metadata.id}`);
+        const metadata = JSON.parse(await readFile(files.metadata, "utf8"));
+        if (
+          !metadata ||
+          typeof metadata.id !== "string" ||
+          !metadata.id.trim() ||
+          typeof metadata.name !== "string" ||
+          !metadata.name.trim()
+        )
+          throw Error(`${files.metadata}: id and name are required`);
+        if (
+          metadata.type !== undefined &&
+          !["flex", "grid"].includes(metadata.type)
+        )
+          throw Error(`${files.metadata}: invalid layout type`);
+        if (ids.has(metadata.id))
+          throw Error(`Duplicate preset ID: ${metadata.id}`);
         ids.add(metadata.id);
-        const path = relative(base, folder).split(sep).join('/');
-        const [html, css] = await Promise.all([readFile(files.html, 'utf8'), readFile(files.css, 'utf8')]);
-        discovered.push({ ...metadata, editor: { ...metadata.editor, category: metadata.editor?.category ?? label(path.split('/')[0]) }, source, path, files: Object.fromEntries(Object.entries(files).map(([key, file]) => [key, relative(root, file).split(sep).join("/")])) as PresetRegistryEntry["files"], html, css });
+        const path = relative(base, folder).split(sep).join("/");
+        const [html, css] = await Promise.all([
+          readFile(files.html, "utf8"),
+          readFile(files.css, "utf8"),
+        ]);
+        discovered.push({
+          ...metadata,
+          editor: {
+            ...metadata.editor,
+            category: metadata.editor?.category ?? label(path.split("/")[0]),
+          },
+          source,
+          path,
+          files: Object.fromEntries(
+            Object.entries(files).map(([key, file]) => [
+              key,
+              relative(root, file).split(sep).join("/"),
+            ]),
+          ) as PresetRegistryEntry["files"],
+          html,
+          css,
+        });
       }
-      for (const child of children) if (child.isDirectory() && !child.name.startsWith('.') && child.name !== 'node_modules') await walk(resolve(folder, child.name));
+      for (const child of children)
+        if (
+          child.isDirectory() &&
+          !child.name.startsWith(".") &&
+          child.name !== "node_modules"
+        )
+          await walk(resolve(folder, child.name));
     }
     await walk(base);
     discovered.sort((a, b) => compareFolders(a.path, b.path));
     entries.push(...discovered);
   }
-  if (!entries.length) throw Error('Preset registry contains no presets');
+  if (!entries.length) throw Error("Preset registry contains no presets");
   return entries;
 }
 
 export function presetRegistryPlugin(config: PresetRegistryConfig): Plugin {
-  const publicId = 'virtual:preset-registry';
-  const virtualId = '\0' + publicId;
+  const publicId = "virtual:preset-registry";
+  const virtualId = "\0" + publicId;
   let root: string;
   function relevant(file: string) {
-    return Object.values(config.sources).some(source => {
+    return Object.values(config.sources).some((source) => {
       const path = relative(resolve(root, source.base), resolve(file));
-      return path === '' || (path !== '..' && !path.startsWith('..' + sep) && !posix.isAbsolute(path));
+      return (
+        path === "" ||
+        (path !== ".." &&
+          !path.startsWith(".." + sep) &&
+          !posix.isAbsolute(path))
+      );
     });
   }
   function reload(server: ViteDevServer, file: string) {
     if (!relevant(file)) return;
     const module = server.moduleGraph.getModuleById(virtualId);
     if (module) server.moduleGraph.invalidateModule(module);
-    server.ws.send({ type: 'full-reload' });
+    server.ws.send({ type: "full-reload" });
   }
   return {
-    name: 'preset-registry',
-    configResolved(config) { root = config.root; },
-    resolveId(id) { if (id === publicId) return virtualId; },
+    name: "preset-registry",
+    configResolved(config) {
+      root = config.root;
+    },
+    resolveId(id) {
+      if (id === publicId) return virtualId;
+    },
     async load(id) {
       if (id !== virtualId) return;
-      const entries = await buildPresetRegistry(config, root, file => this.addWatchFile(file));
-      return `export const registry = ${JSON.stringify({ entries })};\nexport const PRESETS = registry.entries;`;
+      const entries = await buildPresetRegistry(config, root, (file) =>
+        this.addWatchFile(file),
+      );
+      const imports: string[] = [];
+      const records: string[] = [];
+      for (const [index, entry] of entries.entries()) {
+        const folder = dirname(resolve(root, entry.files.metadata));
+        const sources: Record<string, string> = {};
+        for (const name of [
+          "layout.tsx",
+          "preview.tsx",
+          "page.mdx",
+          "preset.json",
+        ]) {
+          const file = resolve(folder, name);
+          this.addWatchFile(file);
+          sources[name] = await readFile(file, "utf8");
+        }
+        imports.push(
+          `import Page${index} from ${JSON.stringify(resolve(folder, "page.mdx"))};`,
+        );
+        records.push(
+          `{...${JSON.stringify(entry)}, Page: Page${index}, sources: ${JSON.stringify(sources)}}`,
+        );
+      }
+      return `${imports.join("\n")}\nexport const registry = { entries: [${records.join(",")}] };\nexport const PRESETS = registry.entries;`;
     },
     configureServer(server) {
-      server.watcher.add(Object.values(config.sources).map(source => resolve(root, source.base)));
+      server.watcher.add(
+        Object.values(config.sources).map((source) =>
+          resolve(root, source.base),
+        ),
+      );
       const onChange = (file: string) => reload(server, file);
-      server.watcher.on('add', onChange).on('unlink', onChange).on('change', onChange).on('addDir', onChange).on('unlinkDir', onChange);
-      server.httpServer?.once('close', () => {
-        for (const event of ['add', 'unlink', 'change', 'addDir', 'unlinkDir']) server.watcher.off(event, onChange);
+      server.watcher
+        .on("add", onChange)
+        .on("unlink", onChange)
+        .on("change", onChange)
+        .on("addDir", onChange)
+        .on("unlinkDir", onChange);
+      server.httpServer?.once("close", () => {
+        for (const event of ["add", "unlink", "change", "addDir", "unlinkDir"])
+          server.watcher.off(event, onChange);
       });
     },
   };
