@@ -42,7 +42,7 @@ import type {
   EditorDocument,
   SourceError,
 } from "./editor/types";
-import { PRESETS } from "./presets";
+import { PRESETS } from "../presets";
 import { EditorTheme, EditorNodeId } from "./types";
 
 const COMPUTED_PROPERTIES = [
@@ -352,7 +352,10 @@ export default function App() {
           >
             <Code2 size={15} /> Source
           </button>
-          <button className={`app-shell__toolbar-button is-primary`} onClick={copyExport}>
+          <button
+            className={`app-shell__toolbar-button is-primary`}
+            onClick={copyExport}
+          >
             <Copy size={15} /> Copy export
           </button>
         </div>
@@ -389,7 +392,10 @@ export default function App() {
               HAST document itself.
             </p>
           </div>
-          <section className="app-shell__in-the-wild" aria-labelledby="in-the-wild-title">
+          <section
+            className="app-shell__in-the-wild"
+            aria-labelledby="in-the-wild-title"
+          >
             <div className="app-shell__in-the-wild-heading">
               <Globe2 size={14} aria-hidden="true" />
               <strong id="in-the-wild-title">In the wild</strong>

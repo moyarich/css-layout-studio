@@ -1,10 +1,10 @@
 # Presets
 
-Presets are source folders, following MoyaForge CLI's colocated `page.mdx` convention.
+Presets are source folders
 Each layout has separate Flex and Grid folders:
 
 ```text
-presets/<order>-<category>/<layout>/
+presets/<order>-<category>/<order>-<layout>/
   01-flex/
     preset.json
     index.html
@@ -20,14 +20,15 @@ presets/<order>-<category>/<layout>/
 - `index.html` and `styles.css`: authoritative editable sources loaded by the editor.
 - `layout.tsx`: standalone React markup. Import `styles.css` when using it in an app.
 - `preview.tsx`: isolated iframe preview of the HTML/CSS for documentation.
-- `page.mdx`: MoyaForge documentation page with frontmatter, preview, and source links.
+- `page.mdx`: Documentation page with frontmatter, preview, and source links.
 
 The two TSX files serve the reusable layout and its documentation preview.
 Changes to HTML should also be reflected in `layout.tsx`; previews always use the HTML/CSS.
 
 ## Adding a preset
 
-1. Create the layout's `01-flex/` and `02-grid/` folders in the appropriate category.
+1. Create a numbered layout folder inside its numbered category, then add
+   `01-flex/` and `02-grid/` variant folders.
 2. Add the files shown above; no registry edits or `presets = []` exports are needed.
 3. Give each variant a unique ID (`example-flex`, `example-grid`), a name
    (`Example - Flex`, `Example - Grid`), and its `type` (`flex`, `grid`).
@@ -40,8 +41,10 @@ The Vite plugin in `plugins/preset-registry.ts` scans those folders and exposes
 `virtual:preset-registry`. `index.ts` only re-exports the generated registry.
 
 Sorting follows the folder hierarchy: numeric prefixes first, then natural
-alphabetical order at each level. Prefixes are optional. For example,
-`02-content` comes before `10-utility`, and `01-flex` before `02-grid`.
+alphabetical order at each level. Use prefixes at every level: category, layout, and variant. For example,
+`02-content/01-article-aside/01-flex` comes before
+`02-content/02-before-after/01-flex`. Within each layout, `01-flex` precedes `02-grid`.
+Rename a folder prefix to change its position; IDs and display names stay unchanged.
 Source groups follow their declaration order in `registry.config.ts`.
 New categories need no code changes. Category labels default to the first folder
 name without its numeric prefix; `editor.category` can override the label.
@@ -52,11 +55,11 @@ with an error. Development reloads when source files or folders change.
 import { PRESETS } from "./presets";
 ```
 
-## MoyaForge documentation
+##Documentation
 
-Point a MoyaForge registry source at this directory and discover `**/page.mdx`.
+Point a registry source at this directory and discover `**/page.mdx`.
 Pages use the CLI scaffold's YAML frontmatter and relative component imports.
-The editor itself does not need the MoyaForge runtime or MDX compilation.
+The editor itself does not need the runtime or MDX compilation.
 
 ---
 

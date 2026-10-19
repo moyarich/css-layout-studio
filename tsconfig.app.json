@@ -24,6 +24,7 @@
     "test/examples/Header.stories.ts",
     "test/examples/Header.tsx",
     "test/examples/Page.stories.ts",
-    "test/examples/Page.tsx"
+    "test/examples/Page.tsx",
+    "presets"
   ]
 }
