@@ -1,0 +1,103 @@
+.container {
+  box-sizing: border-box;
+
+  /* The storefront is a vertical sequence of large editorial sections. */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  width: 100%;
+  padding: 16px;
+  margin: 0 auto;
+}
+
+.navigation {
+  flex: 0 0 72px;
+}
+
+.hero {
+  /* The primary visual dominates the opening viewport. */
+  flex: 0 0 520px;
+}
+
+.editorial-feature {
+  display: flex;
+  flex: 0 0 360px;
+  min-width: 0;
+  gap: 16px;
+}
+
+.editorial-copy {
+  /* Copy occupies the smaller side of the editorial split. */
+  flex: 2 1 0;
+}
+
+.editorial-visual {
+  flex: 3 1 0;
+}
+
+.feature-visual {
+  flex: 0 0 420px;
+}
+
+.stories {
+  display: flex;
+  flex: 0 0 280px;
+  min-width: 0;
+  gap: 16px;
+}
+
+.story {
+  flex: 1 1 0;
+}
+
+.footer {
+  flex: 0 0 180px;
+}
+
+
+.navigation,
+.hero,
+.editorial-copy,
+.editorial-visual,
+.feature-visual,
+.story,
+.footer {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.navigation {
+  background: #f5f0c8;
+}
+
+.hero {
+  background: #cfe4f7;
+}
+
+.editorial-copy {
+  background: #d8f1df;
+}
+
+.editorial-visual {
+  background: #e4dcf7;
+}
+
+.feature-visual {
+  background: #f7dfc8;
+}
+
+.story-one {
+  background: #dcecf7;
+}
+
+.story-two {
+  background: #f1dce5;
+}
+
+.footer {
+  background: #dddaf5;
+}

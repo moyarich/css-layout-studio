@@ -1,0 +1,10 @@
+{
+  "id": "media-object-grid",
+  "name": "Media Object - Grid",
+  "description": "Thumbnail, flexible content, and trailing action using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [],
+  "editor": {
+    "category": "Content"
+  }
+}

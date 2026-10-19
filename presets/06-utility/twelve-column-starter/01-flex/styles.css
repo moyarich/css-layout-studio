@@ -1,0 +1,54 @@
+.container {
+  box-sizing: border-box;
+
+  /* Each calculated flex-basis subtracts row gaps before applying the span ratio. */
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.span {
+  box-sizing: border-box;
+  height: 90px;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.full-span {
+  flex: 0 0 100%;
+  background: #cfe4f7;
+}
+
+.eight-span {
+  flex: 0 0 calc((100% - 20px) * 2 / 3);
+  background: #d8f1df;
+}
+
+.four-span {
+  flex: 0 0 calc((100% - 20px) / 3);
+  background: #f5f0c8;
+}
+
+.half-span {
+  flex: 0 0 calc((100% - 20px) / 2);
+}
+
+.half-a { background: #e4dcf7; }
+.half-b { background: #f1dce5; }
+
+.quarter-span {
+  flex: 0 0 calc((100% - 60px) / 4);
+}
+
+.quarter-a { background: #dcecf7; }
+.quarter-b { background: #f7dfc8; }
+.quarter-c { background: #d8f1df; }
+.quarter-d { background: #e7def3; }

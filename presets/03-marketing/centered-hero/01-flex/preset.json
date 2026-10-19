@@ -1,0 +1,15 @@
+{
+  "id": "centered-hero-flex",
+  "name": "Centered Hero - Flex",
+  "description": "Centered eyebrow, headline, actions, and product shot using a Flexbox column.",
+  "type": "flex",
+  "inTheWild": [
+    {
+      "name": "Notion homepage",
+      "url": "https://www.notion.com/"
+    }
+  ],
+  "editor": {
+    "category": "Marketing"
+  }
+}

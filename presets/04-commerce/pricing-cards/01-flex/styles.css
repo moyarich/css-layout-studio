@@ -1,0 +1,39 @@
+.container {
+  box-sizing: border-box;
+
+  /* Flex weights define the 29/33/29 card proportions. */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.plan {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.starter-plan {
+  flex: 29 1 0;
+  height: 340px;
+  background: #d8f1df;
+}
+
+.pro-plan {
+  flex: 33 1 0;
+  height: 390px;
+  background: #cfe4f7;
+}
+
+.business-plan {
+  flex: 29 1 0;
+  height: 340px;
+  background: #e4dcf7;
+}

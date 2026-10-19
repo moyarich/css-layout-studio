@@ -1,0 +1,23 @@
+{
+  "id": "editorial-showcase-grid",
+  "name": "Editorial Showcase - Grid",
+  "description": "Image-led commerce homepage with navigation, full-bleed hero, split editorial feature, promotional visual, stories, and footer using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "NORR11",
+      "url": "https://norr11.com/"
+    },
+    {
+      "name": "Aesop",
+      "url": "https://www.aesop.com/"
+    },
+    {
+      "name": "HAY",
+      "url": "https://www.hay.com/"
+    }
+  ],
+  "editor": {
+    "category": "Commerce"
+  }
+}

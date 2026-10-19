@@ -1,0 +1,32 @@
+.container {
+  box-sizing: border-box;
+
+  /* Three equal columns plus a second row spanning every column. */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 180px 150px;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.feature,
+.call-to-action {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.feature-one { background: #cfe4f7; }
+.feature-two { background: #f1dce5; }
+.feature-three { background: #e4dcf7; }
+
+.call-to-action {
+  grid-column: 1 / -1;
+  background: #f7dfc8;
+}

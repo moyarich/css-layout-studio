@@ -1,0 +1,15 @@
+{
+  "id": "holy-grail-v3-flex",
+  "name": "Holy Grail V3 - Flex",
+  "description": "Fixed header, sticky scrolling left sidebar, independently scrollable article and right rail, and an inset footer using Flexbox.",
+  "type": "flex",
+  "inTheWild": [
+    {
+      "name": "Visual Studio",
+      "url": "https://code.visualstudio.com/docs/editing/userinterface/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

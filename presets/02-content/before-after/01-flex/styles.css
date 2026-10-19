@@ -1,0 +1,25 @@
+.container {
+  box-sizing: border-box;
+
+  /* Equal flex factors create a balanced comparison. */
+  display: flex;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.before,
+.after {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.before { background: #f1dce5; }
+.after { background: #d8f1df; }

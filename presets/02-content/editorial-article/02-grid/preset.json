@@ -1,0 +1,23 @@
+{
+  "id": "editorial-article-grid",
+  "name": "Editorial Article - Grid",
+  "description": "Editorial article layout using CSS Grid with a header ad, sticky article header, article content, sidebar, and footer.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "The New York Times",
+      "url": "https://www.nytimes.com/"
+    },
+    {
+      "name": "The Verge",
+      "url": "https://www.theverge.com/"
+    },
+    {
+      "name": "Medium",
+      "url": "https://medium.com/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

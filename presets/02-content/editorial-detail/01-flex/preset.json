@@ -1,0 +1,18 @@
+{
+  "id": "editorial-detail-flex",
+  "name": "Editorial Detail - Flex",
+  "description": "Editorial detail page shell with header, hero, primary content and supporting rail, related content, and footer using nested Flexbox containers.",
+  "type": "flex",
+  "inTheWild": [
+    {
+      "name": "I Got Next Magazine Discovery",
+      "url": "https://igotnextmagazine.com/discovery/581bcb5a-600c-40a2-b25a-d61f4b35f3f8"
+    }
+  ],
+  "editor": {
+    "category": "Content",
+    "canvas": {
+      "minHeight": 1100
+    }
+  }
+}

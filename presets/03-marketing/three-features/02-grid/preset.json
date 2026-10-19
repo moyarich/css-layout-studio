@@ -1,0 +1,19 @@
+{
+  "id": "three-feature-grid",
+  "name": "3-Up Features - Grid",
+  "description": "Three equal feature cards above a full-width call to action using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "Linear features",
+      "url": "https://linear.app/features"
+    },
+    {
+      "name": "Asana product pages",
+      "url": "https://asana.com/product"
+    }
+  ],
+  "editor": {
+    "category": "Marketing"
+  }
+}

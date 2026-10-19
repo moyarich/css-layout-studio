@@ -1,0 +1,39 @@
+.container {
+  box-sizing: border-box;
+
+  /* Wrapping creates a three-card row followed by a full-width CTA. */
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.feature,
+.call-to-action {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.feature {
+  /* Three cards exactly fill the row after two 20px gaps. */
+  flex: 0 0 calc((100% - 40px) / 3);
+  height: 180px;
+}
+
+.feature-one { background: #cfe4f7; }
+.feature-two { background: #f1dce5; }
+.feature-three { background: #e4dcf7; }
+
+.call-to-action {
+  flex: 0 0 100%;
+  height: 150px;
+  background: #f7dfc8;
+}

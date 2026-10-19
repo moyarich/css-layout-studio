@@ -1,0 +1,23 @@
+{
+  "id": "footer-grid",
+  "name": "Mega Footer - Grid",
+  "description": "Wide brand region plus four link columns using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/"
+    },
+    {
+      "name": "Adobe",
+      "url": "https://www.adobe.com/"
+    },
+    {
+      "name": "Shopify",
+      "url": "https://www.shopify.com/"
+    }
+  ],
+  "editor": {
+    "category": "Marketing"
+  }
+}

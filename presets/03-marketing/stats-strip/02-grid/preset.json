@@ -1,0 +1,23 @@
+{
+  "id": "stats-grid",
+  "name": "Stats Strip - Grid",
+  "description": "Four equal metric blocks using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "Microsoft Annual Report",
+      "url": "https://www.microsoft.com/investor/reports/ar25/"
+    },
+    {
+      "name": "Stripe company page",
+      "url": "https://stripe.com/about"
+    },
+    {
+      "name": "charity: water",
+      "url": "https://www.charitywater.org/"
+    }
+  ],
+  "editor": {
+    "category": "Marketing"
+  }
+}

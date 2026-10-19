@@ -1,0 +1,23 @@
+{
+  "id": "comparison-flex",
+  "name": "Before / After - Flex",
+  "description": "Balanced before-and-after panels using Flexbox.",
+  "type": "flex",
+  "inTheWild": [
+    {
+      "name": "Dropbox homepage",
+      "url": "https://www.dropbox.com/"
+    },
+    {
+      "name": "Adobe Lightroom",
+      "url": "https://www.adobe.com/products/photoshop-lightroom.html"
+    },
+    {
+      "name": "Awwwards case studies",
+      "url": "https://www.awwwards.com/websites/case-study/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

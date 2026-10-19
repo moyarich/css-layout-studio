@@ -1,0 +1,10 @@
+{
+  "id": "media-object-flex",
+  "name": "Media Object - Flex",
+  "description": "Thumbnail, flexible content, and trailing action using Flexbox.",
+  "type": "flex",
+  "inTheWild": [],
+  "editor": {
+    "category": "Content"
+  }
+}

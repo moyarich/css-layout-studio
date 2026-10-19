@@ -1,0 +1,23 @@
+{
+  "id": "kanban-flex",
+  "name": "Kanban Board - Flex",
+  "description": "Four equal workflow columns using Flexbox.",
+  "type": "flex",
+  "inTheWild": [
+    {
+      "name": "Trello boards",
+      "url": "https://trello.com/"
+    },
+    {
+      "name": "Jira boards",
+      "url": "https://www.atlassian.com/software/jira"
+    },
+    {
+      "name": "GitHub Projects",
+      "url": "https://github.com/features/issues"
+    }
+  ],
+  "editor": {
+    "category": "App"
+  }
+}

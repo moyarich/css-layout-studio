@@ -1,0 +1,88 @@
+.container {
+  box-sizing: border-box;
+
+  /*
+   * Large explicit rows reproduce the vertical rhythm of an
+   * image-led editorial storefront.
+   */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows:
+    72px
+    520px
+    360px
+    420px
+    280px
+    180px;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  margin: 0 auto;
+}
+
+.editorial-feature {
+  /*
+   * The visual receives more horizontal space than the
+   * accompanying editorial copy.
+   */
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(0, 3fr);
+  min-width: 0;
+  gap: 16px;
+}
+
+.stories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  gap: 16px;
+}
+
+
+.navigation,
+.hero,
+.editorial-copy,
+.editorial-visual,
+.feature-visual,
+.story,
+.footer {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.navigation {
+  background: #f5f0c8;
+}
+
+.hero {
+  background: #cfe4f7;
+}
+
+.editorial-copy {
+  background: #d8f1df;
+}
+
+.editorial-visual {
+  background: #e4dcf7;
+}
+
+.feature-visual {
+  background: #f7dfc8;
+}
+
+.story-one {
+  background: #dcecf7;
+}
+
+.story-two {
+  background: #f1dce5;
+}
+
+.footer {
+  background: #dddaf5;
+}

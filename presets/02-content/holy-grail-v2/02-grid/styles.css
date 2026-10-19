@@ -1,0 +1,94 @@
+.container {
+  box-sizing: border-box;
+
+  /* Fixed shell rows keep the header and footer outside the scroll regions. */
+  display: grid;
+  grid-template-rows: 72px minmax(0, 1fr) 72px;
+  gap: 16px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background: #f5f0c8;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  gap: 16px;
+
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-left {
+  display: grid;
+  grid-template-rows: 72px minmax(0, 1fr) 72px;
+
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  background: #e4dcf7;
+}
+
+.sidebar-content {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  background: #c8f2e4;
+}
+
+.inner-sidebar-content {
+  height: 100vh;
+}
+
+.sidebar-footer {
+  background: #d8f1df;
+}
+
+.article {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+
+  background: #cfe4f7;
+}
+
+.sidebar-right {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+
+  background: #dddaf5;
+}
+
+.footer {
+  background: #f1dce5;
+}
+
+.header,
+.sidebar-header,
+.sidebar-content,
+.sidebar-footer,
+.article,
+.sidebar-right,
+.footer {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}

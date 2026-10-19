@@ -1,0 +1,10 @@
+{
+  "id": "clipped-workspace-flex",
+  "name": "Clipped Workspace - Flex",
+  "description": "Sparse campaign shell with repeated clipped transitions using Flexbox.",
+  "type": "flex",
+  "inTheWild": [],
+  "editor": {
+    "category": "Marketing"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "holy-grail-v2-flex",
+  "name": "Holy Grail V2 - Flex",
+  "description": "Fixed application shell with non-scrolling header and footer, a left sidebar with fixed header and footer, and independently scrollable content regions using Flexbox.",
+  "type": "flex",
+  "inTheWild": [],
+  "editor": {
+    "category": "Content"
+  }
+}

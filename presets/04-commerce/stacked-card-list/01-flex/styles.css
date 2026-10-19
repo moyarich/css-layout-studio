@@ -1,0 +1,69 @@
+.container {
+  box-sizing: border-box;
+
+  /* The page stacks the hero above the stacked card list. */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.hero,
+.comparison-item > * {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.hero {
+  flex: 0 0 140px;
+  background: #f5f0c8;
+}
+
+.comparison-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  gap: 16px;
+}
+
+.comparison-item {
+  /* Fixed supporting regions leave the details column flexible. */
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  gap: 12px;
+}
+
+.rank {
+  flex: 0 0 64px;
+  background: #f5f0c8;
+}
+
+.product {
+  flex: 0 0 160px;
+  background: #cfe4f7;
+}
+
+.details {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #d8f1df;
+}
+
+.score {
+  flex: 0 0 110px;
+  background: #dddaf5;
+}
+
+.action {
+  flex: 0 0 150px;
+  background: #f7dfc8;
+}

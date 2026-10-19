@@ -1,0 +1,23 @@
+{
+  "id": "form-grid",
+  "name": "Two-Column Form - Grid",
+  "description": "Paired fields with full-width rows using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "Shopify Checkout",
+      "url": "https://www.shopify.com/checkout"
+    },
+    {
+      "name": "GitHub signup",
+      "url": "https://github.com/signup"
+    },
+    {
+      "name": "Salesforce lead forms",
+      "url": "https://www.salesforce.com/"
+    }
+  ],
+  "editor": {
+    "category": "Utility"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "12-col-grid",
+  "name": "12-Column Starter - Grid",
+  "description": "12/8/4/6/6/3-column span examples using a 12-track CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "Bootstrap grid",
+      "url": "https://getbootstrap.com/docs/5.3/layout/grid/"
+    },
+    {
+      "name": "Material Design layouts",
+      "url": "https://m3.material.io/foundations/layout/understanding-layout/overview"
+    },
+    {
+      "name": "The New York Times",
+      "url": "https://www.nytimes.com/"
+    }
+  ],
+  "editor": {
+    "category": "Utility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "holy-grail-v3-grid",
+  "name": "Holy Grail V3 - Grid",
+  "description": "Fixed header, sticky scrolling left sidebar, independently scrollable article and right rail, and an inset footer using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "Visual Studio",
+      "url": "https://code.visualstudio.com/docs/editing/userinterface/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

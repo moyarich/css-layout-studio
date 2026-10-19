@@ -1,0 +1,39 @@
+---
+title: "Dashboard Shell - Flex"
+label: "Flexbox"
+---
+
+import Preview from './preview';
+
+# Dashboard Shell - Flex
+
+Sidebar, top bar, KPI row, chart, and activity panel using nested Flexbox containers.
+
+<Preview />
+
+## Visual structure
+
+```text
+Visual structure
+
++----------+-----------------------------------+
+| Sidebar  | Top bar                           |
+|          +-----------+-----------+-----------+
+|          | KPI       | KPI       | KPI       |
+|          +-----------------------+-----------+
+|          | Chart                 | Activity  |
++----------+-----------------------+-----------+
+```
+
+## Source files
+
+- [HTML](./index.html)
+- [CSS](./styles.css)
+- [React component](./layout.tsx)
+- [Preview](./preview.tsx)
+
+## In the wild
+
+- [Stripe Dashboard](https://dashboard.stripe.com/)
+- [Shopify Admin](https://admin.shopify.com/)
+- [Google Analytics](https://analytics.google.com/)

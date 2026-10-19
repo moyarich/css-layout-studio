@@ -1,0 +1,23 @@
+{
+  "id": "article-grid",
+  "name": "Article + Aside - Grid",
+  "description": "Readable article with a stacked aside and related-content rail using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "MDN documentation",
+      "url": "https://developer.mozilla.org/"
+    },
+    {
+      "name": "Wikipedia articles",
+      "url": "https://www.wikipedia.org/"
+    },
+    {
+      "name": "The Guardian articles",
+      "url": "https://www.theguardian.com/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

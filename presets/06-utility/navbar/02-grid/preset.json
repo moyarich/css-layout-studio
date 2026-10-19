@@ -1,0 +1,23 @@
+{
+  "id": "navbar-grid",
+  "name": "Navbar - Grid",
+  "description": "Logo, navigation, and actions using CSS Grid columns.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "GitHub navigation",
+      "url": "https://github.com/"
+    },
+    {
+      "name": "Stripe navigation",
+      "url": "https://stripe.com/"
+    },
+    {
+      "name": "Shopify navigation",
+      "url": "https://www.shopify.com/"
+    }
+  ],
+  "editor": {
+    "category": "Utility"
+  }
+}

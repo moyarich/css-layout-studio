@@ -1,0 +1,23 @@
+{
+  "id": "holy-grail-v1-grid",
+  "name": "Holy Grail V1 - Grid",
+  "description": "Header, left sidebar, main content, right sidebar, and footer using CSS Grid.",
+  "type": "grid",
+  "inTheWild": [
+    {
+      "name": "BBC News",
+      "url": "https://www.bbc.com/news"
+    },
+    {
+      "name": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/"
+    },
+    {
+      "name": "Smashing Magazine",
+      "url": "https://www.smashingmagazine.com/"
+    }
+  ],
+  "editor": {
+    "category": "Content"
+  }
+}

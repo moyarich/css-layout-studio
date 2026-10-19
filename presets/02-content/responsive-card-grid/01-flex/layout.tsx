@@ -1,0 +1,3 @@
+export default function Layout() {
+    return (<><div className={"container"}>{"\n  "}<section className={"card card-one"}>{"Card 1"}</section>{"\n  "}<section className={"card card-two"}>{"Card 2"}</section>{"\n  "}<section className={"card card-three"}>{"Card 3"}</section>{"\n  "}<section className={"card card-four"}>{"Card 4"}</section>{"\n  "}<section className={"card card-five"}>{"Card 5"}</section>{"\n  "}<section className={"card card-six"}>{"Card 6"}</section>{"\n  "}<section className={"card card-seven"}>{"Card 7"}</section>{"\n  "}<section className={"card card-eight"}>{"Card 8"}</section>{"\n"}</div></>);
+}
