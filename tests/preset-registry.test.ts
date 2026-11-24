@@ -19,7 +19,11 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
       },
     },
   };
-  async function add(path: string, id: string) {
+  async function add(
+    path: string,
+    id: string,
+    files?: { html: string; css: string },
+  ) {
     const folder = join(root, "layouts", path);
     await mkdir(folder, { recursive: true });
     await writeFile(
@@ -28,20 +32,20 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
         stringify({
           id,
           title: "Same display name",
-          layout: "preset",
           heading: "Example layout",
           previewHeight: 480,
+          ...(files && { files }),
           inTheWild: [{ name: "Example", url: "https://example.com" }],
           editor: { canvas: { width: 1440 } },
         }) +
         "---\n\n# Example",
     );
     await writeFile(
-      join(folder, "markup.html"),
+      join(folder, files?.html ?? "markup.html"),
       '<div class="container">Example</div>',
     );
     await writeFile(
-      join(folder, "styles.css"),
+      join(folder, files?.css ?? "styles.css"),
       ".container { display: grid; }",
     );
   }
@@ -49,10 +53,6 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
     await add("10-zebra/01-example/10-other", "last");
     await add("02-new-category/01-example/02-grid", "second");
     await add("02-new-category/01-example/01-flex", "first");
-    await writeFile(
-      join(root, "layouts/02-new-category/01-example/01-flex/layout.tsx"),
-      "export default function Layout() {}",
-    );
     const entries = await buildPresetRegistry(config, root);
     assert.deepEqual(
       entries.map((entry) => entry.id),
@@ -60,7 +60,6 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
     );
     assert.equal(entries[0].editor?.category, "New Category");
     assert.equal(entries[0].name, "Same display name");
-    assert.equal(entries[0].layout, "preset");
     assert.equal(entries[0].heading, "Example layout");
     assert.equal(entries[0].previewHeight, 480);
     assert.deepEqual(
@@ -68,7 +67,6 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
       [
         ["markup.html", "html"],
         ["styles.css", "css"],
-        ["layout.tsx", "typescript"],
         ["layout.mdx", "mdx"],
       ],
     );
@@ -79,6 +77,27 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
     assert.equal(entries[0].html, '<div class="container">Example</div>');
     await add("01-added/01-example", "new");
     assert.equal((await buildPresetRegistry(config, root))[0].id, "new");
+    await add("00-authored", "authored", {
+      html: "canvas.html",
+      css: "canvas.css",
+    });
+    const [authored] = await buildPresetRegistry(config, root);
+    assert.equal(authored.id, "authored");
+    assert.deepEqual(
+      authored.sources.map(({ name }) => name),
+      ["canvas.html", "canvas.css", "layout.mdx"],
+    );
+    assert.equal(authored.sources[0].code, authored.html);
+    assert.equal(authored.sources[1].code, authored.css);
+    await writeFile(
+      join(root, "layouts/00-authored/layout.mdx"),
+      "---\nid: authored\ntitle: Authored\nfiles:\n  html: ../canvas.html\n---\n",
+    );
+    await assert.rejects(
+      buildPresetRegistry(config, root),
+      /files.html must be a local filename/,
+    );
+    await rm(join(root, "layouts/00-authored"), { recursive: true });
     await add("20-duplicate", "first");
     await assert.rejects(
       buildPresetRegistry(config, root),

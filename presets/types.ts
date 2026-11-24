@@ -9,7 +9,6 @@ export type PresetSource = {
   id: string;
   name: string;
   label?: string;
-  layout?: "preset";
   heading?: string;
   previewHeight?: number;
   description?: string;

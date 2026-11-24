@@ -1,3 +1,0 @@
-export default function Layout() {
-    return (<><div className={"container"}>{"\n  "}<header className={"header"}>{"Header"}</header>{"\n\n  "}<main className={"main"}>{"\n    "}<aside className={"sidebar-left"}>{"\n      "}<header className={"sidebar-header"}>{"Sidebar Header"}</header>{"\n      "}<div className={"sidebar-content"}>{"\n        "}<div>{"Left Sidebar"}</div>{"\n        "}<div className={"inner-sidebar-content"}></div>{"\n      "}</div>{"\n      "}<footer className={"sidebar-footer"}>{"Sidebar Footer"}</footer>{"\n    "}</aside>{"\n\n    "}<article className={"article"}>{"Article"}</article>{"\n\n    "}<aside className={"sidebar-right"}>{"Right Sidebar"}</aside>{"\n  "}</main>{"\n\n  "}<footer className={"footer"}>{"Footer"}</footer>{"\n"}</div></>);
-}

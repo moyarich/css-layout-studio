@@ -8,6 +8,8 @@ export interface DirectiveComponent {
   childComponent?: string;
   /** Attribute receiving the directive's optional heading. Defaults to label. */
   titleProp?: string;
+  /** Allow a stable identifier before the title, separated by a pipe. */
+  titleId?: boolean;
   /** Forward the authored directive type to a generic component. */
   typeProp?: string;
   /** Replace Markdown links only inside this directive. */
@@ -101,20 +103,30 @@ function transform(
     const classes = Array.isArray(cls)
       ? cls
       : typeof cls === "string"
-        ? cls.split(/\\s+/)
+        ? cls.split(/\s+/)
         : [];
     const title = classes.includes("custom-block-title")
       ? titleOf(children.shift()!)
       : undefined;
-    const attributes: Attribute[] = title
+    const [id, label] =
+      selected.titleId && title?.includes("|")
+        ? [
+            title.slice(0, title.indexOf("|")).trim(),
+            title.slice(title.indexOf("|") + 1).trim(),
+          ]
+        : [title, title];
+    const attributes: Attribute[] = label
       ? [
           {
             type: "mdxJsxAttribute",
             name: selected.titleProp ?? "label",
-            value: title,
+            value: label,
           },
         ]
       : [];
+    if (selected.titleId && id) {
+      attributes.push({ type: "mdxJsxAttribute", name: "id", value: id });
+    }
     if (selected.typeProp && type) {
       attributes.push({
         type: "mdxJsxAttribute",

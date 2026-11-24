@@ -1,4 +1,17 @@
 import {
+  PresetToolbar,
+  PresetLibrary,
+  PresetPageTitle,
+  PresetDescription,
+  PresetTabs,
+  PresetPreview,
+  PresetSourceFiles,
+  PresetSourceEditor,
+  PresetExamples,
+  PresetInspector,
+  PresetAbout,
+} from "../components/StudioPage/PresetComponents";
+import {
   StudioShell,
   StudioBody,
   Workspace,
@@ -45,6 +58,17 @@ import { SourceFiles } from "../components/SourceFiles/SourceFiles";
 
 // Components are capabilities. Their arrangement and presence belong to page.mdx.
 export const studioMdxComponents = {
+  PresetToolbar,
+  PresetLibrary,
+  PresetPageTitle,
+  PresetDescription,
+  PresetTabs,
+  PresetPreview,
+  PresetSourceFiles,
+  PresetSourceEditor,
+  PresetExamples,
+  PresetInspector,
+  PresetAbout,
   StudioShell,
   StudioBody,
   Workspace,

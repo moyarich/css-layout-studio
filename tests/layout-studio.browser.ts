@@ -124,10 +124,6 @@ try {
     await page.getByRole("button", { name: "page.mdx", exact: true }).count(),
     0,
   );
-  assert.equal(
-    await page.getByRole("button", { name: "layout.tsx", exact: true }).count(),
-    0,
-  );
   await page.getByRole("button", { name: "CSS", exact: true }).click();
   const downloadPromise = page.waitForEvent("download");
   await page
@@ -136,14 +132,13 @@ try {
   const download = await downloadPromise;
   const archive = unzipSync(await readFile((await download.path())!));
   const paths = Object.keys(archive);
-  assert.equal(paths.length, 5);
+  assert.deepEqual(
+    paths.map((path) => path.split("/").at(-1)).sort(),
+    ["index.html", "page.mdx", "styles.css"],
+  );
   assert.match(
     strFromU8(archive[paths.find((path) => path.endsWith("/styles.css"))!]),
     /37px/,
-  );
-  assert.doesNotMatch(
-    strFromU8(archive[paths.find((path) => path.endsWith("/preview.tsx"))!]),
-    /DocumentationPreviewContext|useContext/,
   );
 
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
@@ -190,12 +185,7 @@ try {
   );
   authoredFixture = await mkdtemp("presets/99-mdx-composition-");
   const original = "presets/02-content/01-article-aside/01-flex/";
-  for (const file of [
-    "index.html",
-    "styles.css",
-    "layout.tsx",
-    "preview.tsx",
-  ]) {
+  for (const file of ["index.html", "styles.css"]) {
     await writeFile(
       `${authoredFixture}/${file}`,
       await readFile(original + file),
@@ -396,6 +386,81 @@ try {
     "https://example.com/frontmatter",
   );
   await page.getByText("Unlinked example", { exact: true }).waitFor();
+  await writeFile(
+    `${authoredFixture}/canvas.html`,
+    '<div class="container">HTML selected by page.mdx</div>',
+  );
+  await writeFile(
+    `${authoredFixture}/canvas.css`,
+    ".container { display: grid; gap: 41px; }",
+  );
+  await writeFile(
+    `${authoredFixture}/page.mdx`,
+    `---
+id: authored-mdx-test
+title: Directive Composition Test
+heading: Directive workspace
+files:
+  html: canvas.html
+  css: canvas.css
+---
+<StudioShell>
+<StudioBody>
+<Workspace>
+<PresetPageTitle />
+
+::::: workspace-tabs inspect
+
+:::: workspace-tab notes | Notes first
+
+## Notes only
+
+::::
+
+:::: workspace-tab inspect | Inspect layout
+
+::: preview-layout Authored preview
+:::
+
+::: in-the-wild References
+
+[Authored link](https://example.com/)
+
+:::
+
+::::
+
+:::::
+
+</Workspace>
+</StudioBody>
+</StudioShell>
+`,
+  );
+  await page.reload();
+  await page
+    .getByRole("textbox", { name: "Search layouts" })
+    .fill("Directive Composition Test");
+  await page
+    .locator(".library-items button")
+    .filter({ hasText: "Directive Composition Test" })
+    .click();
+  await page.getByRole("heading", { name: "Directive workspace" }).waitFor();
+  const directiveTabs = page.getByRole("tablist", { name: "Workspace" }).getByRole("tab");
+  assert.deepEqual(await directiveTabs.allTextContents(), ["Notes first", "Inspect layout"]);
+  assert.equal(await directiveTabs.nth(1).getAttribute("aria-selected"), "true");
+  const directivePanel = page.getByRole("tabpanel");
+  assert.match(await directivePanel.innerText(), /Authored preview[\s\S]*References/);
+  const authoredCanvas = directivePanel.locator(".preview-shadow-host .container");
+  assert.equal(await authoredCanvas.textContent(), "HTML selected by page.mdx");
+  assert.equal(await authoredCanvas.evaluate((element) => getComputedStyle(element).gap), "41px");
+
+  assert.equal(await directivePanel.getByRole("link", { name: "Authored link" }).count(), 1);
+  assert.equal(await page.locator(".studio-inspector, .source-peek, .outline-tree-panel").count(), 0);
+  await directiveTabs.nth(0).click();
+  await directivePanel.getByRole("heading", { name: "Notes only" }).waitFor();
+  assert.equal(await directivePanel.locator(".live-card").count(), 0);
+
   assert.deepEqual(errors, []);
   console.log(
     "Passed: MDX rendering, variants, viewports, outline, live CSS edits, source links, ZIP contents, search, theme, mobile layout, and fully authored MDX composition.",

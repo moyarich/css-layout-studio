@@ -13,9 +13,38 @@ editor:
   category: Marketing
 title: Bento Grid - Flex
 label: Flexbox
-layout: preset
 heading: "Bento Grid"
+files:
+  html: index.html
+  css: styles.css
 ---
+
+<StudioShell>
+<PresetToolbar homeTab="playground" />
+<StudioBody>
+<PresetLibrary />
+<Workspace>
+<PresetPageTitle />
+
+::::: workspace-tabs playground
+
+:::: workspace-tab overview | Overview
+
+::: outline
+:::
+
+::: preview-layout
+:::
+
+<Documentation>
+<DocumentationGrid>
+<section>
+
+## How it works
+
+<PresetDescription />
+
+Use Playground to edit the HTML and CSS, select regions in the live preview, and compare the Flexbox and Grid implementations.
 
 <details>
 <summary>View layout structure</summary>
@@ -33,3 +62,36 @@ Visual structure
 ```
 
 </details>
+
+</section>
+
+::: in-the-wild
+:::
+
+</DocumentationGrid>
+</Documentation>
+
+::::
+
+:::: workspace-tab playground | Playground
+
+::: preview-layout
+
+<PresetSourceFiles targetTab="playground" />
+
+:::
+
+::: source-editor
+:::
+
+::::
+
+:::::
+
+</Workspace>
+<PresetInspector>
+<PresetAbout targetTab="overview" />
+</PresetInspector>
+</StudioBody>
+<StudioToast />
+</StudioShell>

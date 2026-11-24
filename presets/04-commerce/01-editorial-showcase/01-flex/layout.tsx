@@ -1,3 +1,0 @@
-export default function Layout() {
-    return (<><div className={"container"}>{"\n  "}<header className={"navigation"}>{"Navigation"}</header>{"\n\n  "}<section className={"hero"}>{"Hero"}</section>{"\n\n  "}<section className={"editorial-feature"}>{"\n    "}<div className={"editorial-copy"}>{"Editorial Copy"}</div>{"\n    "}<div className={"editorial-visual"}>{"Editorial Visual"}</div>{"\n  "}</section>{"\n\n  "}<section className={"feature-visual"}>{"Feature Visual"}</section>{"\n\n  "}<section className={"stories"}>{"\n    "}<article className={"story story-one"}>{"Story One"}</article>{"\n    "}<article className={"story story-two"}>{"Story Two"}</article>{"\n  "}</section>{"\n\n  "}<footer className={"footer"}>{"Footer"}</footer>{"\n"}</div></>);
-}
