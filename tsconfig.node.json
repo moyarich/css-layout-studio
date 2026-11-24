@@ -14,6 +14,7 @@
     "registry.config.ts",
     "vite-plugins/**/*.ts",
     "presets/types.ts",
-    "src/types/index.ts"
+    "src/types/index.ts",
+    "src/studio/source-types.ts"
   ]
 }

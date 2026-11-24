@@ -28,6 +28,9 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
         stringify({
           id,
           title: "Same display name",
+          layout: "preset",
+          heading: "Example layout",
+          previewHeight: 480,
           inTheWild: [{ name: "Example", url: "https://example.com" }],
           editor: { canvas: { width: 1440 } },
         }) +
@@ -46,6 +49,10 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
     await add("10-zebra/01-example/10-other", "last");
     await add("02-new-category/01-example/02-grid", "second");
     await add("02-new-category/01-example/01-flex", "first");
+    await writeFile(
+      join(root, "layouts/02-new-category/01-example/01-flex/layout.tsx"),
+      "export default function Layout() {}",
+    );
     const entries = await buildPresetRegistry(config, root);
     assert.deepEqual(
       entries.map((entry) => entry.id),
@@ -53,6 +60,19 @@ test("registry uses folder hierarchy, numeric ordering, and configurable filenam
     );
     assert.equal(entries[0].editor?.category, "New Category");
     assert.equal(entries[0].name, "Same display name");
+    assert.equal(entries[0].layout, "preset");
+    assert.equal(entries[0].heading, "Example layout");
+    assert.equal(entries[0].previewHeight, 480);
+    assert.deepEqual(
+      entries[0].sources.map(({ name, language }) => [name, language]),
+      [
+        ["markup.html", "html"],
+        ["styles.css", "css"],
+        ["layout.tsx", "typescript"],
+        ["layout.mdx", "mdx"],
+      ],
+    );
+    assert.equal(entries[0].sources[1].default, true);
     assert.equal(entries[0].editor?.canvas?.width, 1440);
     assert.equal(entries[0].inTheWild?.[0].url, "https://example.com");
     assert.ok(entries[0].files.page.endsWith("layout.mdx"));

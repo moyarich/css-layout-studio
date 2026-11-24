@@ -8,6 +8,10 @@ export type InTheWildExample = {
 export type PresetSource = {
   id: string;
   name: string;
+  label?: string;
+  layout?: "preset";
+  heading?: string;
+  previewHeight?: number;
   description?: string;
   type?: "flex" | "grid";
   inTheWild?: InTheWildExample[];

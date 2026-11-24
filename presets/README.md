@@ -19,7 +19,7 @@ presets/<order>-<category>/<order>-<layout>/
 - `index.html` and `styles.css`: authoritative editable sources loaded by the editor.
 - `layout.tsx`: standalone React markup. Import `styles.css` when using it in an app.
 - `preview.tsx`: isolated iframe preview of the HTML/CSS for documentation.
-- `page.mdx`: Documentation page with frontmatter, preview, and source links.
+- `page.mdx`: Documentation page with frontmatter and layout-specific guidance.
 
 The two TSX files serve the reusable layout and its documentation preview.
 Changes to HTML should also be reflected in `layout.tsx`; previews always use the HTML/CSS.
@@ -36,7 +36,7 @@ Changes to HTML should also be reflected in `layout.tsx`; previews always use th
 6. Use `.container` as the root with `width: 100%; height: 100%;`.
 
 `registry.config.ts` defines the source directories and optional source filenames.
-The Vite plugin in `vite-plugins/preset-registry.ts` discovers `page.mdx` files, reads their YAML frontmatter, and exposes
+The Vite plugin in `vite-plugins/preset-registry/preset-registry.ts` discovers `page.mdx` files, reads their YAML frontmatter, and exposes
 `virtual:preset-registry`. `index.ts` only re-exports the generated registry.
 
 Sorting follows the folder hierarchy: numeric prefixes first, then natural
@@ -54,11 +54,16 @@ with an error. Development reloads when source files or folders change.
 import { PRESETS } from "./presets";
 ```
 
-##Documentation
+## Documentation
 
-Point a registry source at this directory and discover `**/page.mdx`.
-Pages use the CLI scaffold's YAML frontmatter and relative component imports.
-Layout Studio compiles MDX through Vite and renders these pages directly; no separate documentation app is required.
+Set `layout: preset` in frontmatter to render the shared studio shell, overview,
+live preview, source editor, and examples. Set `heading` for the workspace
+heading and optionally set `previewHeight` in pixels. Write layout-specific
+guidance in the Markdown body.
+
+The registry exposes the configured HTML, CSS, and MDX files and includes
+`layout.tsx` and `preview.tsx` when present. Pages that compose their own studio
+can still use the individual components and export a custom `sources` array.
 
 ---
 

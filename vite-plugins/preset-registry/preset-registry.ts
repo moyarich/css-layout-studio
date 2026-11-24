@@ -2,6 +2,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { resolve, relative, sep, posix } from "node:path";
 import { parseDocument } from "yaml";
 import type { Plugin, ViteDevServer } from "vite";
+import type { PageSource } from "../../src/studio/source-types";
 import type { PresetSource } from "../../presets/types";
 
 export interface PresetRegistryConfig {
@@ -17,6 +18,7 @@ export interface PresetRegistryEntry extends PresetSource {
   source: string;
   path: string;
   files: { page: string; html: string; css: string };
+  sources: PageSource[];
 }
 const collator = new Intl.Collator("en", { numeric: true });
 function compareFolders(a: string, b: string): number {
@@ -94,10 +96,8 @@ export async function buildPresetRegistry(
           ]),
         ) as PresetRegistryEntry["files"];
         Object.values(files).forEach(watch);
-        const metadata = parsePresetFrontmatter(
-          await readFile(files.page, "utf8"),
-          files.page,
-        );
+        const page = await readFile(files.page, "utf8");
+        const metadata = parsePresetFrontmatter(page, files.page);
         if (
           metadata.type !== undefined &&
           !["flex", "grid"].includes(metadata.type)
@@ -111,6 +111,18 @@ export async function buildPresetRegistry(
           readFile(files.html, "utf8"),
           readFile(files.css, "utf8"),
         ]);
+        const sources: PageSource[] = [
+          { name: names.html, code: html, language: "html", edit: true },
+          { name: names.css, code: css, language: "css", edit: true, default: true },
+        ];
+        for (const name of ["layout.tsx", "preview.tsx"]) {
+          if (children.some((child) => child.isFile() && child.name === name)) {
+            const file = resolve(folder, name);
+            watch(file);
+            sources.push({ name, code: await readFile(file, "utf8"), language: "typescript" });
+          }
+        }
+        sources.push({ name: names.page, code: page, language: "mdx" });
         discovered.push({
           ...metadata,
           editor: {
@@ -127,6 +139,7 @@ export async function buildPresetRegistry(
           ) as PresetRegistryEntry["files"],
           html,
           css,
+          sources,
         });
       }
       for (const child of children)
@@ -183,13 +196,22 @@ export function presetRegistryPlugin(config: PresetRegistryConfig): Plugin {
       const records: string[] = [];
       for (const [index, entry] of entries.entries()) {
         const page = resolve(root, entry.files.page);
-        this.addWatchFile(page);
         imports.push(`import * as Page${index} from ${JSON.stringify(page)};`);
-        records.push(
-          `{...${JSON.stringify(entry)}, Page: Page${index}.default, sources: Page${index}.sources ?? [], html: Page${index}.sources?.find(source => source.edit === true && source.language === "html")?.code ?? ${JSON.stringify(entry.html)}, css: Page${index}.sources?.find(source => source.edit === true && source.language === "css")?.code ?? ${JSON.stringify(entry.css)}}`,
-        );
+        records.push(`withPage(${JSON.stringify(entry)}, Page${index})`);
       }
-      return `${imports.join("\n")}\nexport const registry = { entries: [${records.join(",")}] };\nexport const PRESETS = registry.entries;`;
+      return `${imports.join("\n")}
+function withPage(entry, page) {
+  const sources = page.sources ?? entry.sources;
+  return {
+    ...entry,
+    Page: page.default,
+    sources,
+    html: sources.find(source => source.edit === true && source.language === "html")?.code ?? entry.html,
+    css: sources.find(source => source.edit === true && source.language === "css")?.code ?? entry.css,
+  };
+}
+export const registry = { entries: [${records.join(",")}] };
+export const PRESETS = registry.entries;`;
     },
     configureServer(server) {
       server.watcher.add(
