@@ -92,6 +92,10 @@ try {
   await page
     .locator(".editor-frame .monaco-editor textarea")
     .waitFor({ timeout: 30000 });
+  const previewNode = await page
+    .locator(".preview-shadow-host .container[data-editor-id]")
+    .elementHandle();
+  assert.ok(previewNode);
   await page.locator(".editor-frame .monaco-editor").click();
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.insertText(
@@ -103,6 +107,8 @@ try {
       ?.shadowRoot?.querySelector("#preview-styles")
       ?.textContent?.includes("37px"),
   );
+  assert.equal(await previewNode.evaluate((element) => element.isConnected), true);
+  await previewNode.dispose();
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
   assert.equal(await page.locator(".live-card").count(), 1);
   assert.equal(await page.locator(".source-peek").count(), 0);
