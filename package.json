@@ -1,5 +1,7 @@
 {
-  "name": "ast-layout-editor",
+  "name": "css-layout-studio",
+  "publisher": "moyarich",
+  "author": "Moya Richards",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -28,10 +30,15 @@
     "hast-util-to-html": "^9.0.5",
     "lucide-react": "^0.468.0",
     "monaco-editor": "^0.56.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remark-flexible-containers": "^1.5.8",
     "remark-frontmatter": "^5.0.0",
-    "tailwindcss": "^4.3.3"
+    "remark-gfm": "^4.0.1",
+    "remark-mdx-frontmatter": "^6.0.0",
+    "shiki": "^4.5.0",
+    "tailwindcss": "^4.3.3",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "latest",

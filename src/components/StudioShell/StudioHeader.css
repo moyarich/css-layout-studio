@@ -1,0 +1,158 @@
+.studio-header {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--studio-line);
+  background: var(--studio-surface);
+}
+.studio-brand {
+  width: 248px;
+  flex: none;
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 0 24px;
+  color: var(--studio-text);
+  text-decoration: none;
+  font-size: 19px;
+  letter-spacing: -0.7px;
+}
+.studio-brand svg {
+  color: var(--studio-accent);
+  stroke-width: 1.6;
+}
+.studio-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--studio-muted);
+  padding: 0 30px;
+  font-size: 12px;
+  min-width: 0;
+}
+.studio-breadcrumb strong {
+  color: var(--studio-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 550;
+}
+.studio-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 22px;
+  flex: none;
+}
+.studio-button,
+.icon-button {
+  height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--studio-line);
+  background: var(--studio-surface);
+  color: var(--studio-text);
+  border-radius: 7px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+.icon-button {
+  padding: 0;
+  width: 34px;
+}
+.studio-button:hover,
+.icon-button:hover {
+  background: var(--studio-soft);
+}
+.studio-button.primary {
+  background: #201c2d;
+  color: #fff;
+  border-color: #201c2d;
+  box-shadow: 0 2px 3px #18172510;
+}
+.studio-button.primary:hover {
+  background: #3d315b;
+}
+.mobile-library-toggle {
+  display: none;
+}
+@media (min-width: 1600px) {
+  .studio-brand {
+    width: 270px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .studio-brand {
+    width: 215px;
+    font-size: 17px;
+    padding: 0 18px;
+  }
+  .studio-breadcrumb {
+    padding: 0 22px;
+    gap: 10px;
+  }
+  .studio-actions {
+    padding: 0 16px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .studio-breadcrumb > svg,
+  .studio-breadcrumb > span {
+    display: none;
+  }
+  .studio-breadcrumb {
+    padding: 0 15px;
+  }
+  .studio-brand {
+    width: 210px;
+  }
+  .studio-actions .copy-button {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .studio-header {
+    height: 60px;
+  }
+  .studio-brand {
+    width: auto;
+    padding: 0 12px;
+    font-size: 16px;
+    gap: 7px;
+  }
+  .studio-brand svg {
+    width: 23px;
+  }
+  .studio-breadcrumb {
+    display: none;
+  }
+  .studio-actions {
+    padding: 0 10px;
+    gap: 5px;
+  }
+  .studio-button.primary {
+    padding: 0 9px;
+    font-size: 10px;
+  }
+  .studio-actions > .icon-button:not(.mobile-library-toggle) {
+    display: none;
+  }
+  .mobile-library-toggle {
+    display: flex;
+  }
+}
+@media (max-width: 1000px) {
+  .studio-breadcrumb > span:last-child {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

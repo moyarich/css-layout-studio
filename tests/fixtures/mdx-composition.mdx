@@ -1,0 +1,81 @@
+---
+id: authored-mdx-test
+title: MDX Composition Test
+type: flex
+inTheWild:
+  - name: Frontmatter reference
+    url: https://example.com/frontmatter
+  - name: Unlinked example
+editor:
+  category: Test
+---
+
+import notes from './notes.txt?raw';
+
+export const sources = [
+  { name: 'notes.txt', code: notes, language: 'plaintext', edit: false, default: true },
+  { name: 'hidden.txt', code: 'Editable source outside the preview list.', language: 'plaintext', edit: true },
+];
+
+export const viewports = [
+  { id: "wide", label: "Wide", width: 900, icon: "desktop" },
+  { id: "small", label: "Small", width: 420, icon: "phone" },
+];
+
+<StudioShell>
+<StudioHeader title="Authored workspace" breadcrumbs={["Custom section", "Authored navigation"]} homeTab="examples" onNavigate={props.studio.setTab} actions={<StudioActions sources={sources.filter(file => file.name === "hidden.txt")} copy={false} />} />
+<StudioBody>
+<LayoutLibrary groups={props.studio.groups.filter(group => group.label === "Test")} selectedId={props.studio.presetId} onSelect={props.studio.loadPreset} open={props.studio.libraryOpen} />
+<Workspace>
+<PageHeading>
+
+# Authored MDX heading
+
+This page has its own panels and deliberately omits the inspector.
+
+</PageHeading>
+
+<WorkspaceTabs defaultValue="examples" value={props.studio.tab} onValueChange={props.studio.setTab} suffix={frontmatter.label}>
+
+<WorkspacePanel id="examples" label="Examples">
+
+<SourceEditor sources={sources.filter(file => file.name === "notes.txt")} mode="preview" targetTab="explore" />
+
+[Ordinary notes link](./notes.txt)
+
+<SourceFiles title="Files from this page" sources={sources} onOpen={name => props.studio.showSource(name, "explore")}>
+
+- [**Read my notes**](./notes.txt "Notes source")
+- [Unknown file](./missing.txt)
+
+</SourceFiles>
+
+::: experimental Custom authored block
+
+The document controls this block, including **Markdown formatting**.
+
+:::
+
+::: in-the-wild Community examples
+
+- [Custom reference](https://example.com)
+
+:::
+
+</WorkspacePanel>
+<WorkspacePanel id="explore" label="Edit files">
+
+<SourceEditor sources={sources.filter(file => file.name === "notes.txt")} />
+
+<SourceEditor sources={sources.filter(file => file.name === "hidden.txt")} />
+
+<InTheWild title="Frontmatter examples" examples={frontmatter.inTheWild} />
+
+
+<StudioLivePreview sources={sources} controls={<PreviewVariantControls options={props.studio.activeLayout.variants.map(variant => ({ id: variant.id, label: variant.label ?? variant.name }))} value={props.studio.presetId} onValueChange={props.studio.loadPreset} />} viewports={viewports} />
+
+</WorkspacePanel>
+</WorkspaceTabs>
+</Workspace>
+</StudioBody>
+</StudioShell>

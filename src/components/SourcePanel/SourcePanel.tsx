@@ -8,7 +8,7 @@ import { EditorMenu } from "../MonacoEditor/EditorMenu";
 import type { EditorTheme } from "../../editor/types";
 import "./SourcePanel.css";
 
-type SourceLanguage = "html" | "css";
+type SourceLanguage = string;
 
 type SourcePanelProps = {
   label: string;
@@ -209,7 +209,9 @@ export function SourcePanel({
             <div className={`source-panel__heading w-64`}>
               <span className="source-panel__kicker">Source</span>
               <strong>{label}</strong>
-              {dirty ? <span className="source-panel__dirty">Unsaved</span> : null}
+              {dirty ? (
+                <span className="source-panel__dirty">Unsaved</span>
+              ) : null}
             </div>
             <div className="flex-1">
               <EditorMenu

@@ -1,0 +1,26 @@
+.workspace-tabs {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  border-bottom: 1px solid var(--studio-line);
+  margin: 24px 0 22px;
+}
+.workspace-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  padding: 0 3px 13px;
+  color: var(--studio-muted);
+  font-size: 13px;
+}
+.workspace-tabs button[aria-selected="true"] {
+  color: var(--studio-accent);
+  border-bottom-color: var(--studio-accent);
+  font-weight: 600;
+}
+.workspace-path {
+  margin-left: auto;
+  padding-bottom: 13px;
+  color: var(--studio-muted);
+  font-size: 10px;
+}

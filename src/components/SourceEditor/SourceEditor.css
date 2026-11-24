@@ -1,0 +1,118 @@
+.source-peek,
+.source-workspace {
+  background: var(--studio-surface);
+  border: 1px solid var(--studio-line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.file-tabs {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border-bottom: 1px solid var(--studio-line);
+  overflow: auto;
+  padding: 0 8px;
+}
+.file-tabs button {
+  flex: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--studio-muted);
+  font-size: 10px;
+  padding: 13px 10px 11px;
+}
+.file-tabs button.active {
+  color: var(--studio-text);
+  border-bottom-color: var(--studio-accent);
+  font-weight: 650;
+}
+.file-tabs .file-copy {
+  margin-left: auto;
+}
+.source-peek > pre,
+.read-only-source {
+  margin: 0;
+  padding: 18px 20px;
+  font:
+    11px/1.85 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  color: var(--studio-muted);
+  overflow: auto;
+  tab-size: 2;
+}
+.source-peek > pre {
+  max-height: 300px;
+}
+.read-only-source {
+  min-height: 450px;
+  max-height: 65vh;
+  white-space: pre;
+}
+.open-source {
+  background: transparent;
+  border: 0;
+  color: var(--studio-accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px 15px;
+  font-size: 11px;
+}
+.editor-frame {
+  height: 440px;
+  display: flex;
+}
+.editor-frame > .source-panel {
+  flex: 1;
+}
+.studio .source-panel__editor {
+  padding: 0;
+  background: var(--studio-surface);
+}
+.studio .source-panel__editor > section {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.studio .source-panel__heading {
+  width: auto;
+  padding: 0 10px;
+}
+.studio .source-panel__kicker {
+  display: none;
+}
+.source-status {
+  font-size: 10px;
+  color: var(--studio-muted);
+  padding: 10px 14px;
+  border-top: 1px solid var(--studio-line);
+}
+@media (max-width: 1200px) {
+  .file-tabs button {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+}
+
+.editor-loading {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 180px;
+  color: var(--studio-muted);
+  font-size: 12px;
+}
+.highlighted-source {
+  background: var(--studio-surface);
+}
+.highlighted-source code {
+  font: inherit;
+  white-space: pre;
+}
+.source-peek > pre.read-only-source {
+  max-height: 65vh;
+}

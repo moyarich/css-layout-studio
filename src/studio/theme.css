@@ -1,0 +1,27 @@
+/* MoyaForge component tokens inherit the application's light/dark palette. */
+.studio {
+  --mf-color-surface: var(--studio-surface);
+  --mf-color-surface-muted: var(--studio-bg);
+  --mf-color-text: var(--studio-text);
+  --mf-color-text-muted: var(--studio-muted);
+  --mf-color-border: var(--studio-line);
+  --mf-color-primary: var(--studio-accent);
+  --mf-custom-block-bg: var(--studio-soft);
+  --mf-custom-block-border: var(--studio-line);
+  --mf-custom-block-radius: 8px;
+  --mf-custom-block-padding: 14px 18px;
+}
+.studio .custom-block {
+  color: var(--studio-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 20px 0;
+}
+.studio .custom-block-title {
+  color: var(--studio-text);
+  font-weight: 600;
+  margin: 0 0 5px;
+}
+.studio .custom-block p:last-child {
+  margin-bottom: 0;
+}

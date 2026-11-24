@@ -6,10 +6,9 @@ import { defineConfig } from "vite";
 import path from "node:path";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
-import mdx from "@mdx-js/rollup";
-import remarkFrontmatter from "remark-frontmatter";
+import { mdxPagesPlugin } from "./vite-plugins/mdx-pages-plugin/mdx-pages-plugin";
 import registry from "./registry.config";
-import { presetRegistryPlugin } from "./vite-plugins/preset-registry";
+import { presetRegistryPlugin } from "./vite-plugins/preset-registry/preset-registry";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
@@ -19,7 +18,7 @@ const dirname =
 export default defineConfig({
   plugins: [
     presetRegistryPlugin(registry),
-    mdx({ remarkPlugins: [remarkFrontmatter] }),
+    mdxPagesPlugin(),
     tailwindcss(),
     react(),
   ],

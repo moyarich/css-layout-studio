@@ -6,7 +6,6 @@ Each layout has separate Flex and Grid folders:
 ```text
 presets/<order>-<category>/<order>-<layout>/
   01-flex/
-    preset.json
     index.html
     styles.css
     layout.tsx
@@ -16,7 +15,7 @@ presets/<order>-<category>/<order>-<layout>/
     ...same files
 ```
 
-- `preset.json`: ID, name, description, type, examples, and editor settings.
+- `page.mdx` frontmatter: ID, title, description, type, examples, and editor settings.
 - `index.html` and `styles.css`: authoritative editable sources loaded by the editor.
 - `layout.tsx`: standalone React markup. Import `styles.css` when using it in an app.
 - `preview.tsx`: isolated iframe preview of the HTML/CSS for documentation.
@@ -37,7 +36,7 @@ Changes to HTML should also be reflected in `layout.tsx`; previews always use th
 6. Use `.container` as the root with `width: 100%; height: 100%;`.
 
 `registry.config.ts` defines the source directories and optional source filenames.
-The Vite plugin in `vite-plugins/preset-registry.ts` scans those folders and exposes
+The Vite plugin in `vite-plugins/preset-registry.ts` discovers `page.mdx` files, reads their YAML frontmatter, and exposes
 `virtual:preset-registry`. `index.ts` only re-exports the generated registry.
 
 Sorting follows the folder hierarchy: numeric prefixes first, then natural
@@ -416,14 +415,189 @@ Use contrasting fills for adjacent layout regions.
 
 ---
 
-## Layout Studio
+## Layout Studio: explicit MDX composition
 
-The app compiles each `page.mdx` as a React component. The Overview displays its
-authored documentation and embeds the same selectable preview used by the
-Playground. Documentation source links open the corresponding Source tab.
-The local `preview.tsx` reads `DocumentationPreviewContext` when displayed in the
-editor, and retains its isolated HTML/CSS preview when used independently.
+`App.tsx` mounts the shared editor state and supplies it to the active MDX page as
+`props.studio`. Components receive their page data, options, and navigation
+callbacks through props. The YAML frontmatter is exported as `frontmatter` by
+`remark-mdx-frontmatter`, so the document can reference its own metadata.
 
-Export folder downloads a ZIP with all six preset files, including the current
-HTML/CSS edits. Its preview is standalone and does not import editor context.
-TSX and MDX tabs show reference sources; HTML and CSS support live editing.
+```mdx
+<StudioHeader
+  title="Layout Studio"
+  breadcrumbs={[frontmatter.editor?.category, frontmatter.title]}
+  homeTab="overview"
+  onNavigate={props.studio.setTab}
+  actions={<StudioActions sources={sources} />}
+/>
+
+<LayoutLibrary
+  groups={props.studio.groups}
+  selectedId={props.studio.presetId}
+  onSelect={props.studio.loadPreset}
+  open={props.studio.libraryOpen}
+/>
+
+<WorkspaceTabs
+  defaultValue="overview"
+  value={props.studio.tab}
+  onValueChange={props.studio.setTab}
+  suffix={frontmatter.label}
+>
+  <WorkspacePanel id="overview" label="Overview">
+    <InTheWild examples={frontmatter.inTheWild} />
+    <SourceEditor sources={sources} mode="preview" targetTab="edit" />
+  </WorkspacePanel>
+  <WorkspacePanel id="edit" label="Edit files">
+    <SourceEditor sources={sources.filter(file => file.language === 'css')} />
+  </WorkspacePanel>
+</WorkspaceTabs>
+```
+
+Tab IDs are independent of labels. `WorkspaceTabs` also supports local state by
+omitting `value` and `onValueChange`; `defaultValue` chooses its initial panel.
+Keyboard arrow keys, Home, and End navigate the authored panel order.
+
+Header actions are an explicit slot. `StudioActions` accepts `library`, `theme`,
+`copy`, and `download` flags, plus the source list to export. `InspectorSidebar`
+accepts `title` and a `footer` slot; the about card is an optional `AboutLayout`
+component with explicit `targetTab` and `onNavigate` props.
+
+The component map is `src/mdx/mdx-components.ts`. Components and their styles live
+together under `src/components/`. Shared document, selection, drafts, theme, and
+editing actions live in `src/studio/` and `src/editor/useLayoutEditor.ts`.
+
+## Page-owned source files
+
+Each page imports its sources and exports their descriptors. Order, default
+selection, and folder exports follow that list. Each SourceEditor receives the
+list or subset to display explicitly:
+
+```mdx
+import markup from './index.html?raw';
+import styles from './styles.css?raw';
+
+export const sources = [
+  { name: 'index.html', code: markup, language: 'html', edit: true },
+  { name: 'styles.css', code: styles, language: 'css', edit: true, default: true },
+];
+
+<SourceEditor sources={sources} />
+```
+
+`edit` is boolean and defaults to false. HTML/CSS edits update the live preview;
+other editable files keep session drafts for export. SourceEditor only uses the
+files in its supplied list. `targetTab` or `onOpen` controls where the optional
+preview's "Open source editor" action goes. There is no assumed Playground label.
+
+## Preview options
+
+```mdx
+export const viewports = [
+  { id: 'wide', label: 'Wide', width: 1024, icon: 'desktop' },
+  { id: 'narrow', label: 'Narrow', width: 390, icon: 'phone' },
+];
+
+<LivePreview
+  sources={sources}
+  variants={props.studio.activeLayout.variants}
+  selectedVariant={props.studio.presetId}
+  onVariantChange={props.studio.loadPreset}
+  viewports={viewports}
+  defaultViewport="wide"
+  height={480}
+/>
+```
+
+Variant and viewport choices belong to the page; no list is read implicitly from
+context. The live document, selection, and viewport state remain shared editor
+mechanics. A preview can omit variant or viewport choices by passing empty lists.
+
+## Source actions and examples
+
+```mdx
+<SourceFiles
+  title="Source Files"
+  sources={sources}
+  onOpen={name => props.studio.showSource(name, 'edit')}
+>
+
+- [My HTML](./index.html)
+- [CSS](./styles.css)
+
+</SourceFiles>
+
+<InTheWild title="In the wild" examples={frontmatter.inTheWild} />
+```
+
+The compiler scopes SourceLink rendering to the SourceFiles subtree, including
+JSX scopes. Its explicit `sources` and `onOpen` props are passed to its child
+links through a local compound-component scope, not the global studio context.
+Outside the block, Markdown links remain ordinary anchors. Standalone SourceLink
+components can receive `sources` and `onOpen` directly.
+
+InTheWild never reads the active page implicitly. Pass frontmatter examples or
+another array; authored children can override the list. An empty list renders
+nothing.
+
+## Preset frontmatter and discovery
+
+There is no separate metadata JSON file. `page.mdx` frontmatter contains `id`,
+`title`, `description`, `type`, `label`, `editor`, and optionally `inTheWild`.
+`id` and `title` are required. IDs are unique; folder ordering determines
+navigation order. Invalid YAML, duplicate keys, and invalid layout types produce
+errors with page paths. `files.page` in registry.config.ts overrides the page
+filename. `src/studio/navigation.ts` only groups library navigation.
+
+## MoyaForge custom blocks
+
+The MoyaForge UI components were installed using:
+
+```sh
+npx shadcn@latest add moyarich/moyaforge/custom-block moyarich/moyaforge/page moyarich/moyaforge/code-group moyarich/moyaforge/copy-button --yes
+```
+
+They live under `src/components/ui/` with their license. The CustomBlock prop type
+locally omits native HTML `title` so ReactNode titles compile. The compiler
+conventions in `vite-plugins/mdx-pages-plugin/` follow MoyaForge's neutral custom
+blocks and directive mappings. `src/studio/theme.css` maps MoyaForge's tokens.
+
+Arbitrary `::: experimental My idea` blocks use CustomBlock, with nested Markdown
+and code fences. `code-group` / `code-tab` directives use MoyaForge code components.
+Use JSX for studio components that need explicit object props or callbacks.
+
+## Source syntax highlighting
+
+Read-only source views and compact previews use Shiki with each file's declared
+`language`. TypeScript files ending in `.tsx` use the TSX grammar. Unsupported
+languages fall back to plain text, and token colors follow the app's light/dark
+theme. Source text is preserved exactly; tokens render as escaped React content.
+Editable source files continue using Monaco.
+
+## Editing-first page structure
+
+Overview contains the document outline, live preview, documentation and examples.
+Playground opens by default with one live preview, HTML/CSS source links and one
+source editor limited to editable files. Read-only files remain available for
+exports. There is no separate Outline tab or repeated source snippet.
+
+`LivePreview` accepts an optional `actions` React node. Playground passes its
+HTML/CSS `SourceFiles` links through this slot in the preview toolbar; Overview
+omits actions. Use `title={null}` on `SourceFiles` for compact toolbar links.
+
+### Portable preview shell
+
+`LivePreview` is presentation-only: it accepts `children`, `actions`, `controls`,
+`title`, `hint`, `status`, `width`, and `height`, without a Studio context dependency.
+`StudioLivePreview` connects that shell to the editable document and selection.
+Pages supply `PreviewVariantControls` through its `controls` prop, with explicit
+option labels from preset metadata. `PreviewViewportControls` is separately usable
+with a controlled value and change callback. Toolbar groups wrap according to
+the card width, with larger controls and a dedicated source-action row on small cards.
+
+Enable `resizable` on `LivePreview` (or `StudioLivePreview`) for four corner
+handles on `.live-viewport`. Each handle adjusts both `--viewport-width` and
+`--viewport-height`. Arrow keys move the focused corner by 10px; Shift uses 50px.
+The shell accepts `minWidth`, `maxWidth`, `minHeight`, `maxHeight`, and
+`onSizeChange({ width, height })`. Wider content scrolls inside the viewport.
+Choosing a different viewport resets sizing to that preset.

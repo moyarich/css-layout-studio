@@ -1,4 +1,4 @@
-import type { PresetRegistryConfig } from "./vite-plugins/preset-registry";
+import type { PresetRegistryConfig } from "./vite-plugins/preset-registry/preset-registry";
 
 export default {
   sources: {

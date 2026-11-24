@@ -1,0 +1,12 @@
+.in-the-wild {
+  min-width: 0;
+}
+.in-the-wild ul {
+  display: grid;
+  gap: 8px;
+}
+.in-the-wild a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
