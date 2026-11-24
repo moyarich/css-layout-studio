@@ -146,3 +146,6 @@ vite.config.ts.timestamp-*
 .consumer-dist/
 playwright-report/
 test-results/
+
+# Local screenshots
+/output/
