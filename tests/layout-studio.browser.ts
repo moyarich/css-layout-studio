@@ -99,7 +99,7 @@ try {
   await page.locator(".editor-frame .monaco-editor").click();
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.insertText(
-    ".container { width: 100%; height: 100%; display: grid; gap: 37px; }",
+    ".container { width: 100%; height: 100%; display: grid; gap: 37px; border: 2px solid red !important; }",
   );
   await page.waitForFunction(() =>
     document
@@ -109,6 +109,16 @@ try {
   );
   assert.equal(await previewNode.evaluate((element) => element.isConnected), true);
   await previewNode.dispose();
+  await page.getByRole("searchbox", { name: "Search inspector properties" }).fill("top border width");
+  await page.getByRole("button", { name: "Show details for border-top-width" }).click();
+  const borderDetails = page.getByRole("dialog", { name: "border-top-width details" });
+  assert.equal(
+    await borderDetails.locator(".inspector-field-tooltip-details > span").first().locator("code").textContent(),
+    "2px",
+  );
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Clear inspector search" }).click();
+
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
   assert.equal(await page.locator(".live-card").count(), 1);
   assert.equal(await page.locator(".source-peek").count(), 0);

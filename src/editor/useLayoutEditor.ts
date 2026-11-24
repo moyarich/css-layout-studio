@@ -25,6 +25,10 @@ import type {
   PresetSource,
   SourceError,
 } from "./types";
+import {
+  BORDER_FIELDS,
+  BORDER_RADIUS_FIELDS,
+} from "../components/Inspector/CSSFields";
 import type { SelectedPreviewElement } from "../components/Preview/Preview";
 
 const COMPUTED_PROPERTIES = [
@@ -63,6 +67,8 @@ const COMPUTED_PROPERTIES = [
   "background",
   "border",
   "border-radius",
+  ...BORDER_FIELDS.map(({ property }) => property),
+  ...BORDER_RADIUS_FIELDS.map(({ property }) => property),
   "box-shadow",
   "clip-path",
   "opacity",

@@ -119,18 +119,20 @@ function expandWithBShort(
   value: string,
   important = false,
 ): AuthoredDeclaration[] | null {
-  const expanded = expand(
-    `${property}: ${value}${important ? " !important" : ""};`,
-    {
-      format: "css",
-    },
-  );
+  const expanded = expand(`${property}: ${value};`, {
+    format: "css",
+  });
 
   if (!expanded.ok || typeof expanded.result !== "string") {
     return null;
   }
 
-  const declarations = parseDeclarationList(expanded.result);
+  const declarations = parseDeclarationList(expanded.result).map(
+    (declaration) => ({
+      ...declaration,
+      important,
+    }),
+  );
 
   return declarations.length ? declarations : null;
 }
@@ -1267,6 +1269,9 @@ function getFamilyWriteDeclarations(
     .map((item) => parseDeclaration(item.property, item.value, item.important));
 }
 
+const borderLonghand =
+  /^border-(?:(?:top|right|bottom|left)-(?:width|style|color)|(?:top|bottom)-(?:left|right)-radius)$/;
+
 /**
  * Updates an authored declaration.
  *
@@ -1301,7 +1306,10 @@ export function setDeclaration(
         parseDeclaration(
           property,
           value,
-          getLastAuthoredDeclaration(rule, property)?.important ?? false,
+          (borderLonghand.test(property)
+            ? getExpandedRuleDeclarations(rule, shorthandFamilies)[property]
+                ?.important
+            : getLastAuthoredDeclaration(rule, property)?.important) ?? false,
         ),
       ];
 
@@ -1363,7 +1371,45 @@ export function removeDeclaration(
 
         if (declaration.property === property) {
           list.remove(item);
+          return;
         }
+
+        if (
+          !borderLonghand.test(property) ||
+          !declaration.property.startsWith("border")
+        )
+          return;
+        const value = csstree.generate(declaration.value);
+        // A substitution can supply the entire shorthand, so splitting it before
+        // variable resolution could change the other edges.
+        if (
+          /\b(?:var|env|attr)\(|^(?:initial|inherit|unset|revert(?:-layer)?)$/i.test(
+            value,
+          )
+        )
+          return;
+        const expanded = expandWithBShort(
+          declaration.property,
+          value,
+          !!declaration.important,
+        );
+        if (!expanded?.some((entry) => entry.property === property)) return;
+
+        for (const entry of expanded) {
+          if (entry.property !== property) {
+            list.insertData(
+              parseDeclaration(entry.property, entry.value, entry.important),
+              item,
+            );
+          }
+        }
+        if (declaration.property === "border") {
+          list.insertData(
+            parseDeclaration("border-image", "none", !!declaration.important),
+            item,
+          );
+        }
+        list.remove(item);
       },
     });
 

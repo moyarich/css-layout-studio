@@ -1,0 +1,189 @@
+/* ==========================================================================
+   10. Inspector Rule
+   ========================================================================== */
+
+.inspector-rule {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+}
+
+.inspector-rule code {
+  color: var(--primary);
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   11. Visibility Toolbar
+   ========================================================================== */
+
+.inspector-visibility-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  color: var(--muted-foreground);
+  font-size: 8.5px;
+}
+
+.inspector-visibility-toolbar > div {
+  display: flex;
+  gap: 4px;
+}
+
+.inspector-visibility-toolbar button {
+  height: 23px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--secondary-foreground);
+  font-size: 8.5px;
+  font-weight: 650;
+}
+
+.inspector-visibility-toolbar button:hover {
+  border-color: var(--inspector-hover-border);
+  background: var(--inspector-hover-background);
+  color: var(--inspector-hover-foreground);
+}
+
+/* ==========================================================================
+   12. Filter / Search
+   ========================================================================== */
+
+.inspector-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  margin: 9px 10px 1px;
+}
+
+.inspector-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--muted-foreground);
+}
+
+.inspector-search:focus-within {
+  border-color: var(--inspector-focus-border);
+  box-shadow: var(--inspector-focus-ring);
+  color: var(--inspector-focus-border);
+}
+
+.inspector .inspector-search input[type="search"] {
+  width: 100%;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--foreground);
+  font-size: 10px;
+}
+
+.inspector-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.inspector-search button {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-foreground);
+}
+
+.inspector-search button:hover {
+  background: var(--inspector-hover-background);
+  color: var(--inspector-hover-foreground);
+}
+
+/* ==========================================================================
+   13. Preset Filter
+   ========================================================================== */
+
+.inspector-preset-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 31px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-size: 8.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.inspector-preset-filter > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted-foreground);
+}
+
+.inspector-preset-filter:hover,
+.inspector-preset-filter.active {
+  border-color: var(--inspector-selected-border);
+  background: var(--inspector-selected-background);
+  color: var(--inspector-selected-foreground);
+}
+
+.inspector-preset-filter.active > span {
+  background: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+/* ==========================================================================
+   14. Empty Search State
+   ========================================================================== */
+
+.inspector-search-empty {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  margin: 12px 10px;
+  padding: 24px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 9px;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.inspector-search-empty strong {
+  color: var(--foreground);
+  font-size: 10px;
+}
+
+.inspector-search-empty span {
+  font-size: 8.5px;
+}
+
+.inspector-search-empty button {
+  height: 25px;
+  margin-top: 4px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--secondary-foreground);
+  font-size: 8.5px;
+}

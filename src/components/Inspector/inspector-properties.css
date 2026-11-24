@@ -1,0 +1,113 @@
+/* ==========================================================================
+   21. Legacy / Manual Inspector Sections
+   --------------------------------------------------------------------------
+   Keep these if other parts of the inspector still render the older manual
+   field structure.
+   ========================================================================== */
+
+.inspector-fields {
+  padding: 4px 12px 18px;
+}
+
+.inspector-section {
+  padding-top: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inspector-section:last-child {
+  border-bottom: 0;
+}
+
+.inspector-section-heading {
+  display: grid;
+  gap: 3px;
+  padding: 0 0 8px;
+}
+
+.inspector-section-heading strong {
+  color: var(--foreground);
+  font-size: 11px;
+}
+
+.inspector-section-heading span {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.inspector-field {
+  padding: 11px 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+}
+
+.field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.field-heading label {
+  color: var(--secondary-foreground);
+  font-size: 10px;
+}
+
+.reset-prop {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-foreground);
+}
+
+.reset-prop:hover:not(:disabled) {
+  background: var(--inspector-hover-background);
+  color: var(--inspector-hover-foreground);
+}
+
+/* ==========================================================================
+   22. Shared Inspector Inputs
+   ========================================================================== */
+
+.inspector input,
+.inspector select {
+  width: 100%;
+  height: 31px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 11px;
+}
+
+.inspector input:focus,
+.inspector select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+/* ==========================================================================
+   23. Computed Values
+   ========================================================================== */
+
+.computed-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--muted-foreground);
+  font-size: 9px;
+}
+
+.computed-row code {
+  overflow: hidden;
+  color: var(--secondary-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
