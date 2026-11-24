@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 import path from "node:path";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
+import { mdxPagesPlugin } from "./vite-plugins/mdx-pages-plugin/mdx-pages-plugin";
+import registry from "./registry.config";
+import { presetRegistryPlugin } from "./vite-plugins/preset-registry/preset-registry";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
@@ -13,7 +16,12 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [
+    presetRegistryPlugin(registry),
+    mdxPagesPlugin(),
+    tailwindcss(),
+    react(),
+  ],
   css: {
     devSourcemap: true,
   },

@@ -1,0 +1,35 @@
+.outline-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--studio-muted);
+  padding: 22px;
+  font-size: 12px;
+}
+.outline-workspace {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.65fr) minmax(0, 1.5fr);
+  gap: 18px;
+  align-items: start;
+}
+.outline-tree-panel {
+  min-width: 0;
+  border: 1px solid var(--studio-line);
+  border-radius: 8px;
+  background: var(--studio-surface);
+  padding-bottom: 16px;
+  overflow: auto;
+}
+.outline-tree-panel .outline-heading {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--studio-line);
+  margin-bottom: 10px;
+}
+@media (max-width: 1200px) {
+  .outline-workspace {
+    grid-template-columns: 1fr;
+  }
+  .outline-tree-panel {
+    max-height: 320px;
+  }
+}

@@ -1,0 +1,69 @@
+.container {
+  box-sizing: border-box;
+
+  /* Flexbox needs semantic row/stack groups to model this two-dimensional bento. */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.bento-top,
+.bento-bottom,
+.side-stack {
+  display: flex;
+  gap: 16px;
+}
+
+.bento-top {
+  flex: 0 0 300px;
+}
+
+.primary-feature {
+  flex: 2 1 0;
+}
+
+.side-stack {
+  flex: 1 1 0;
+  flex-direction: column;
+}
+
+.stat-card,
+.logo-cloud {
+  flex: 1 1 0;
+}
+
+.bento-bottom {
+  flex: 0 0 180px;
+}
+
+.insight {
+  flex: 1 1 0;
+}
+
+.automation {
+  flex: 2 1 0;
+}
+
+.primary-feature,
+.stat-card,
+.logo-cloud,
+.insight,
+.automation {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.primary-feature { background: #cfe4f7; }
+.stat-card { background: #f5f0c8; }
+.logo-cloud { background: #e4dcf7; }
+.insight { background: #d8f1df; }
+.automation { background: #f1dce5; }

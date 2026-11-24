@@ -2,7 +2,7 @@ import type { Root, Element, Data } from "hast";
 import type { StyleSheet } from "css-tree";
 import { EditorNodeId } from "../types";
 export type { EditorNodeId, EditorTheme } from "../types";
-export type { PresetSource } from "../presets";
+export type { PresetSource } from "../../presets";
 
 export type EditorNodeData = Data & {
   editorId?: EditorNodeId;

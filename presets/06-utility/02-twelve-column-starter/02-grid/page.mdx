@@ -1,0 +1,116 @@
+---
+id: 12-col-grid
+description: 12/8/4/6/6/3-column span examples using a 12-track CSS Grid.
+type: grid
+inTheWild:
+  - name: Bootstrap grid
+    url: https://getbootstrap.com/docs/5.3/layout/grid/
+  - name: Material Design layouts
+    url: https://m3.material.io/foundations/layout/understanding-layout/overview
+  - name: The New York Times
+    url: https://www.nytimes.com/
+editor:
+  category: Utility
+title: 12-Column Starter - Grid
+label: CSS Grid
+---
+
+import html from './index.html?raw';
+import css from './styles.css?raw';
+import layout from './layout.tsx?raw';
+import preview from './preview.tsx?raw';
+import page from './page.mdx?raw';
+
+export const sources = [
+  { name: 'index.html', code: html, language: 'html', edit: true },
+  { name: 'styles.css', code: css, language: 'css', edit: true, default: true },
+  { name: 'layout.tsx', code: layout, language: 'typescript' },
+  { name: 'preview.tsx', code: preview, language: 'typescript' },
+  { name: 'page.mdx', code: page, language: 'mdx' },
+];
+
+export const viewports = [
+  { id: "fluid", label: "Desktop", icon: "desktop" },
+  { id: "768", label: "Tablet", width: 768, icon: "tablet" },
+  { id: "375", label: "Phone", width: 375, icon: "phone" },
+];
+
+<StudioShell>
+<StudioHeader title="Layout Studio" breadcrumbs={[frontmatter.editor?.category, frontmatter.title]} homeTab="playground" onNavigate={props.studio.setTab} actions={<StudioActions sources={sources} />} />
+<StudioBody>
+<LayoutLibrary groups={props.studio.groups} selectedId={props.studio.presetId} onSelect={props.studio.loadPreset} open={props.studio.libraryOpen} />
+<Workspace>
+<PageHeading>
+
+# 12-Column Starter
+
+12/8/4/6/6/3-column span examples using a 12-track CSS Grid.
+
+</PageHeading>
+
+<WorkspaceTabs defaultValue="playground" value={props.studio.tab} onValueChange={props.studio.setTab} suffix={frontmatter.label}>
+
+<WorkspacePanel id="overview" label="Overview">
+
+<DocumentOutline title="Document outline" />
+
+<StudioLivePreview resizable hint="Select any region to adjust its layout in the inspector. HTML and CSS edits update the preview immediately." sources={sources} controls={<PreviewVariantControls options={props.studio.activeLayout.variants.map(variant => ({ id: variant.id, label: variant.label ?? variant.name }))} value={props.studio.presetId} onValueChange={props.studio.loadPreset} />} viewports={viewports} />
+
+<Documentation>
+<DocumentationGrid>
+<section>
+
+## How it works
+
+12/8/4/6/6/3-column span examples using a 12-track CSS Grid.
+
+Use Playground to edit the HTML and CSS, select regions in the live preview, and compare the Flexbox and Grid implementations.
+
+<details>
+<summary>View layout structure</summary>
+
+```text
+Visual structure
+
++---------------------------------------------------+
+| 12 columns                                        |
++----------------------------------+----------------+
+| 8 columns                        | 4 columns      |
++-------------------------+-------------------------+
+| 6 columns               | 6 columns               |
++------------+------------+------------+------------+
+| 3 columns  | 3 columns  | 3 columns  | 3 columns  |
++------------+------------+------------+------------+
+```
+
+</details>
+
+</section>
+
+<InTheWild title="In the wild" examples={frontmatter.inTheWild} />
+
+</DocumentationGrid>
+
+</Documentation>
+
+</WorkspacePanel>
+<WorkspacePanel id="playground" label="Playground">
+
+<StudioLivePreview resizable hint="Select any region to adjust its layout in the inspector. HTML and CSS edits update the preview immediately." sources={sources} controls={<PreviewVariantControls options={props.studio.activeLayout.variants.map(variant => ({ id: variant.id, label: variant.label ?? variant.name }))} value={props.studio.presetId} onValueChange={props.studio.loadPreset} />} viewports={viewports} actions={
+<SourceFiles title={null} sources={sources.filter(source => source.edit)} onOpen={name => props.studio.showSource(name, "playground")}>
+<ul>
+<li><SourceLink href="./index.html">HTML</SourceLink></li>
+<li><SourceLink href="./styles.css">CSS</SourceLink></li>
+</ul>
+</SourceFiles>
+} />
+
+<SourceEditor sources={sources.filter(source => source.edit)} />
+
+</WorkspacePanel>
+</WorkspaceTabs>
+</Workspace>
+<InspectorSidebar footer={<AboutLayout title="About this layout" description="Preview, guidance and examples from page.mdx" targetTab="overview" onNavigate={props.studio.setTab} />} />
+</StudioBody>
+<StudioToast />
+</StudioShell>

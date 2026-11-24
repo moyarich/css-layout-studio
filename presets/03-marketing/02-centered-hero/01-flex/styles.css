@@ -1,0 +1,46 @@
+.container {
+  box-sizing: border-box;
+
+  /* A vertical Flexbox models the single centered content stack. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.eyebrow,
+.headline,
+.actions,
+.product-shot {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #a8afb9;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.eyebrow {
+  flex: 0 0 54px;
+  background: #f5f0c8;
+}
+
+.headline {
+  flex: 0 0 120px;
+  background: #cfe4f7;
+}
+
+.actions {
+  flex: 0 0 72px;
+  background: #f1dce5;
+}
+
+.product-shot {
+  flex: 0 0 260px;
+  background: #e4dcf7;
+}

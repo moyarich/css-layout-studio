@@ -15,7 +15,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["node", "vite/client"]
+    "types": ["node", "vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "src",
@@ -24,6 +28,7 @@
     "test/examples/Header.stories.ts",
     "test/examples/Header.tsx",
     "test/examples/Page.stories.ts",
-    "test/examples/Page.tsx"
+    "test/examples/Page.tsx",
+    "presets"
   ]
 }
