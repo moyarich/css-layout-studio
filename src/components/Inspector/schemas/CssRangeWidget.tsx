@@ -1,6 +1,15 @@
 import type { WidgetProps } from "@rjsf/utils";
 import { Braces, Check, Ellipsis, Hash, SlidersHorizontal } from "lucide-react";
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
+import { InspectorFieldActions } from "./InspectorFieldActions";
 
 function numberOption(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -159,6 +168,7 @@ function CssRangeModeMenu({
 }
 
 export function CssRangeWidget(props: WidgetProps) {
+  const fieldActions = useContext(InspectorFieldActions);
   const externalValue = String(props.value ?? "");
   const [localValue, setLocalValue] = useState(externalValue);
   const latestValueRef = useRef(externalValue);
@@ -251,7 +261,7 @@ export function CssRangeWidget(props: WidgetProps) {
     document.getElementById(props.id)?.focus({ preventScroll: true });
   }, [mode, props.id]);
 
-  const modeButton = (
+  const modeMenu = (
     <CssRangeModeMenu
       mode={mode}
       canUseNumber={canUseNumber}
@@ -263,9 +273,16 @@ export function CssRangeWidget(props: WidgetProps) {
     />
   );
 
+  const modeButton = fieldActions
+    ? fieldActions.host && createPortal(modeMenu, fieldActions.host)
+    : modeMenu;
+
+  const modeClass = mode === "range" ? "slider" : mode;
+  const widgetClass = `css-range-widget css-range-widget-${modeClass}${fieldActions ? " css-range-widget-header-actions" : ""}`;
+
   if (mode === "text") {
     return (
-      <div className="css-range-widget css-range-widget-text">
+      <div className={widgetClass}>
         <input
           id={props.id}
           name={props.htmlName}
@@ -311,7 +328,7 @@ export function CssRangeWidget(props: WidgetProps) {
 
   if (mode === "number") {
     return (
-      <div className="css-range-widget css-range-widget-number">
+      <div className={widgetClass}>
         <div className="css-range-value">
           <input
             id={props.id}
@@ -343,7 +360,7 @@ export function CssRangeWidget(props: WidgetProps) {
   }
 
   return (
-    <div className="css-range-widget css-range-widget-slider">
+    <div className={widgetClass}>
       <input
         id={props.id}
         name={props.htmlName}

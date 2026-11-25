@@ -17,6 +17,14 @@
   grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
+.css-range-widget-header-actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.css-range-widget-slider.css-range-widget-header-actions {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .css-range-value {
   display: flex;
   align-items: center;
@@ -108,6 +116,20 @@ span.css-range-unit {
   color: var(--muted-foreground);
 }
 
+.inspector-field-actions .css-range-mode {
+  inline-size: 24px;
+  block-size: 24px;
+  border-color: transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: color-mix(in srgb, var(--muted-foreground) 76%, var(--card));
+}
+
+.inspector-field-actions .css-range-mode > svg {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
 .css-range-mode:hover {
   border-color: var(--inspector-hover-border, var(--border));
   background: var(--inspector-hover-background, var(--accent));
@@ -131,7 +153,7 @@ span.css-range-unit {
 }
 
 .inspector .css-range-widget input[type="range"]:focus-visible,
-.inspector .css-range-widget .css-range-mode:focus-visible {
+.inspector .css-range-mode:focus-visible {
   outline: 2px solid var(--inspector-focus-border, var(--ring));
   outline-offset: 1px;
   box-shadow: none;
@@ -141,6 +163,10 @@ span.css-range-unit {
   .css-range-widget-slider {
     grid-template-columns: minmax(0, 1fr) auto;
     row-gap: 4px;
+  }
+
+  .css-range-widget-slider.css-range-widget-header-actions {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .css-range-widget-slider input[type="range"] {

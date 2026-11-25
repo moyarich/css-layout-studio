@@ -110,7 +110,11 @@ try {
   assert.equal(await previewNode.evaluate((element) => element.isConnected), true);
   await previewNode.dispose();
   await page.getByRole("searchbox", { name: "Search inspector properties" }).fill("top border width");
-  await page.getByRole("button", { name: "Show details for border-top-width" }).click();
+  const borderHeader = page.locator(".range-widget-wrapper .label-field-wrapper").filter({
+    has: page.getByText("Top border width", { exact: true }),
+  });
+  await borderHeader.getByRole("button", { name: "Input mode" }).waitFor();
+  await borderHeader.getByRole("button", { name: "Show details for border-top-width" }).click();
   const borderDetails = page.getByRole("dialog", { name: "border-top-width details" });
   assert.equal(
     await borderDetails.locator(".inspector-field-tooltip-details > span").first().locator("code").textContent(),

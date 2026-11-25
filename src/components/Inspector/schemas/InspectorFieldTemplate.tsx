@@ -1,4 +1,3 @@
-
 import clsx from "clsx";
 
 import { Info, ExternalLink } from "lucide-react";
@@ -9,6 +8,7 @@ import {
 } from "@rjsf/utils";
 import { useEffect, useId, useRef, useState } from "react";
 import type { InspectorWidgetId } from "../inspector-model";
+import { InspectorFieldActions } from "./InspectorFieldActions";
 
 type InspectorUiOptions = {
   widget?: string;
@@ -154,6 +154,8 @@ export function InspectorFieldTemplate(props: FieldTemplateProps) {
     registry,
   } = props;
   const uiOptions = getUiOptions(uiSchema) as InspectorUiOptions;
+  const [actionHost, setActionHost] = useState<HTMLDivElement | null>(null);
+  const actionsInLabel = displayLabel && uiOptions.widgetId === "range";
 
   const WrapIfAdditionalTemplate = getTemplate(
     "WrapIfAdditionalTemplate",
@@ -202,11 +204,32 @@ export function InspectorFieldTemplate(props: FieldTemplateProps) {
                   {label}
                   {required ? <span className="required">*</span> : null}
                 </label>
+                {actionsInLabel && (
+                  <div className="inspector-field-actions">
+                    {property && (
+                      <FieldInfo
+                        property={property}
+                        description={rawDescription}
+                        options={uiOptions}
+                      />
+                    )}
+                    <div
+                      ref={setActionHost}
+                      className="inspector-field-mode-slot"
+                    />
+                  </div>
+                )}
               </div>
             ) : null}
-            {children}
+            {actionsInLabel ? (
+              <InspectorFieldActions.Provider value={{ host: actionHost }}>
+                {children}
+              </InspectorFieldActions.Provider>
+            ) : (
+              children
+            )}
           </div>
-          {displayLabel && !isCheckbox && property ? (
+          {displayLabel && !isCheckbox && property && !actionsInLabel ? (
             <FieldInfo
               property={property}
               description={rawDescription}
@@ -225,4 +248,3 @@ export function InspectorFieldTemplate(props: FieldTemplateProps) {
     </WrapIfAdditionalTemplate>
   );
 }
-
