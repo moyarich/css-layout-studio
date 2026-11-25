@@ -55,10 +55,20 @@
   font-size: 10px;
 }
 
+.inspector-field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 4px;
+}
+
+.inspector-field-row:has(> .select-widget-wrapper) {
+  align-items: center;
+}
+
 .inspector-field-control .label-field-wrapper {
   display: flex;
   align-items: center;
-  gap: 5px;
   min-width: 0;
 }
 
