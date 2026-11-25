@@ -196,6 +196,16 @@ try {
       style.borderTopLeftRadius === "14px 9px" &&
       style.borderBottomRightRadius === "12px 6px";
   });
+  await page.waitForFunction(() => {
+    const lines = Array.from(
+      document.querySelectorAll(".source-peek .monaco-editor .view-line"),
+      (line) => line.textContent?.replaceAll("\u00a0", " "),
+    );
+    return lines.includes(".container {") &&
+      lines.includes("  gap: 37px;") &&
+      lines.includes("  border-top-left-radius: 14px 9px;") &&
+      lines.includes("}");
+  });
   await page.getByRole("button", { name: "Clear inspector search" }).click();
 
 

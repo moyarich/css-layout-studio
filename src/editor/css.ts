@@ -949,10 +949,37 @@ export function generateCss(ast: StyleSheet): string {
 }
 
 export function formatCss(ast: StyleSheet): string {
-  /*
-   * CSS Tree remains the serialization source of truth.
-   */
-  return generateCss(ast);
+  function formatNode(node: csstree.CssNode, depth: number): string {
+    const indent = "  ".repeat(depth);
+    if (node.type === "Declaration") {
+      const value = csstree.generate(node.value);
+      const separator = node.property.startsWith("--") ? "" : " ";
+      const important = node.important
+        ? ` !${node.important === true ? "important" : node.important}`
+        : "";
+      return `${indent}${node.property}:${separator}${value}${important};`;
+    }
+
+    if ((node.type === "Rule" || node.type === "Atrule") && node.block) {
+      const prelude = node.prelude ? csstree.generate(node.prelude) : "";
+      const header =
+        node.type === "Atrule"
+          ? `@${node.name}${prelude ? ` ${prelude}` : ""}`
+          : prelude;
+      const lines = node.block.children.map((child) =>
+        formatNode(child, depth + 1),
+      );
+      if (!lines.size) return `${indent}${header} {}`;
+      return [`${indent}${header} {`, ...lines, `${indent}}`].join("\n");
+    }
+
+    return indent + csstree.generate(node);
+  }
+
+  return ast.children
+    .toArray()
+    .map((node) => formatNode(node, 0))
+    .join("\n\n");
 }
 
 // #endregion

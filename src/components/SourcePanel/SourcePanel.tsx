@@ -50,12 +50,13 @@ export function SourcePanel({
     hasSeenInitialValueRef.current = true;
 
     if (pendingAutoSaveRef.current !== null) {
+      const isAutoSaveEcho = value === pendingAutoSaveRef.current;
       pendingAutoSaveRef.current = null;
       if (pendingClearTimerRef.current !== null) {
         window.clearTimeout(pendingClearTimerRef.current);
         pendingClearTimerRef.current = null;
       }
-      return;
+      if (isAutoSaveEcho) return;
     }
 
     // Monaco owns intermediate text. A controlled value arriving while the

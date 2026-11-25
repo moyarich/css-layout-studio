@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { ChevronRight, Copy } from "lucide-react";
 import { CopyButton } from "../ui/components/CopyButton/CopyButton";
 import {
@@ -6,6 +6,7 @@ import {
   sourceText,
   type PageSource,
 } from "../../studio/source-types";
+import { formatCss, parseCssSource } from "../../editor/css";
 import { useStudio } from "../../studio/StudioContext";
 import { HighlightedSource } from "./HighlightedSource";
 import "./SourceEditor.css";
@@ -48,6 +49,14 @@ export function SourceEditor({
     : "";
   const editable = selectedSource?.edit === true;
   const language = selectedSource?.language ?? "plaintext";
+  const peekValue = useMemo(() => {
+    if (mode !== "preview" || language !== "css") return sourceValue;
+    try {
+      return formatCss(parseCssSource(sourceValue));
+    } catch {
+      return sourceValue;
+    }
+  }, [language, mode, sourceValue]);
   if (!selectedSource)
     return (
       <p className="empty-sources">
@@ -84,7 +93,7 @@ export function SourceEditor({
       {mode === "preview" ? (
         <>
           <HighlightedSource
-            code={sourceValue.split("\n").slice(0, 8).join("\n")}
+            code={peekValue.split("\n").slice(0, 8).join("\n")}
             language={language}
             filename={selectedName}
             theme={theme}
