@@ -1,3 +1,0 @@
-export default function Layout() {
-    return (<><div className={"container"}>{"\n  "}<section className={"span full-span"}>{"12 cols"}</section>{"\n  "}<section className={"span eight-span"}>{"8 cols"}</section>{"\n  "}<section className={"span four-span"}>{"4 cols"}</section>{"\n  "}<section className={"span half-span half-a"}>{"6 cols"}</section>{"\n  "}<section className={"span half-span half-b"}>{"6 cols"}</section>{"\n  "}<section className={"span quarter-span quarter-a"}>{"3 cols"}</section>{"\n  "}<section className={"span quarter-span quarter-b"}>{"3 cols"}</section>{"\n  "}<section className={"span quarter-span quarter-c"}>{"3 cols"}</section>{"\n  "}<section className={"span quarter-span quarter-d"}>{"3 cols"}</section>{"\n"}</div></>);
-}

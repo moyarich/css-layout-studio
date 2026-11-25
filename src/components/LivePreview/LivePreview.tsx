@@ -1,5 +1,6 @@
 import { useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Play } from "lucide-react";
+import { PreviewInspector } from "../ui/PreviewInspector";
 import "./LivePreview.css";
 
 /** Presentation-only preview shell: content and toolbar controls belong to the caller. */
@@ -62,19 +63,37 @@ export function LivePreview({
     onSizeChange?.(size);
   };
   return (
-    <section className="live-card" aria-label="Interactive layout preview">
-      <div className="live-toolbar">
-        <strong>
-          <Play size={16} />
-          {title}
-        </strong>
-        {(actions || controls) && (
-          <div className="preview-controls">
-            {actions && <div className="live-actions">{actions}</div>}
-            {controls}
+    <PreviewInspector
+      className="live-card"
+      label="Interactive layout preview"
+      toolbar={
+        <div className="live-toolbar">
+          <strong>
+            <Play size={16} />
+            {title}
+          </strong>
+          {(actions || controls) && (
+            <div className="preview-controls">
+              {actions && <div className="live-actions">{actions}</div>}
+              {controls}
+            </div>
+          )}
+        </div>
+      }
+      footer={
+        (hint || status) && (
+          <div className="live-footer">
+            {hint && (
+              <span>
+                <span className="status-dot" />
+                {hint}
+              </span>
+            )}
+            {status && <code>{status}</code>}
           </div>
-        )}
-      </div>
+        )
+      }
+    >
       <div
         ref={viewportRef}
         className="live-viewport"
@@ -158,17 +177,6 @@ export function LivePreview({
             />
           ))}
       </div>
-      {(hint || status) && (
-        <div className="live-footer">
-          {hint && (
-            <span>
-              <span className="status-dot" />
-              {hint}
-            </span>
-          )}
-          {status && <code>{status}</code>}
-        </div>
-      )}
-    </section>
+    </PreviewInspector>
   );
 }

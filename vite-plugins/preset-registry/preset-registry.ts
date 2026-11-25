@@ -1,7 +1,8 @@
 import { readFile, readdir } from "node:fs/promises";
-import { resolve, relative, sep, posix } from "node:path";
+import { resolve, relative, sep, posix, win32 } from "node:path";
 import { parseDocument } from "yaml";
 import type { Plugin, ViteDevServer } from "vite";
+import type { PageSource } from "../../src/studio/source-types";
 import type { PresetSource } from "../../presets/types";
 
 export interface PresetRegistryConfig {
@@ -17,6 +18,7 @@ export interface PresetRegistryEntry extends PresetSource {
   source: string;
   path: string;
   files: { page: string; html: string; css: string };
+  sources: PageSource[];
 }
 const collator = new Intl.Collator("en", { numeric: true });
 function compareFolders(a: string, b: string): number {
@@ -61,6 +63,21 @@ export function parsePresetFrontmatter(text: string, file: string) {
   return { ...metadata, name };
 }
 
+function localFilename(value: unknown, field: string): string {
+  if (
+    typeof value !== "string" ||
+    !value.trim() ||
+    value === "." ||
+    value === ".." ||
+    posix.basename(value) !== value ||
+    win32.basename(value) !== value ||
+    value.includes("\0")
+  ) {
+    throw Error(`${field} must be a local filename`);
+  }
+  return value;
+}
+
 /** Discover source folders in configured source order, then numeric folder order. */
 export async function buildPresetRegistry(
   config: PresetRegistryConfig,
@@ -77,9 +94,8 @@ export async function buildPresetRegistry(
       css: "styles.css",
       ...options.files,
     };
-    for (const name of Object.values(names)) {
-      if (!name || name.includes("/") || name.includes("\\") || name === "..")
-        throw Error(`Registry file names must be local basenames: ${name}`);
+    for (const [kind, name] of Object.entries(names)) {
+      localFilename(name, `Registry ${source}.files.${kind}`);
     }
     const discovered: PresetRegistryEntry[] = [];
     async function walk(folder: string): Promise<void> {
@@ -87,17 +103,38 @@ export async function buildPresetRegistry(
       if (
         children.some((child) => child.isFile() && child.name === names.page)
       ) {
-        const files = Object.fromEntries(
-          Object.entries(names).map(([key, name]) => [
-            key,
-            resolve(folder, name),
-          ]),
-        ) as PresetRegistryEntry["files"];
-        Object.values(files).forEach(watch);
-        const metadata = parsePresetFrontmatter(
-          await readFile(files.page, "utf8"),
-          files.page,
+        const pagePath = resolve(folder, names.page);
+        watch(pagePath);
+        const page = await readFile(pagePath, "utf8");
+        const metadata = parsePresetFrontmatter(page, pagePath);
+        const declaredFiles = metadata.files;
+        if (
+          declaredFiles !== undefined &&
+          (!declaredFiles ||
+            typeof declaredFiles !== "object" ||
+            Array.isArray(declaredFiles))
+        ) {
+          throw Error(`${pagePath}: files must be a mapping`);
+        }
+        const htmlName = localFilename(
+          declaredFiles && Object.hasOwn(declaredFiles, "html")
+            ? declaredFiles.html
+            : names.html,
+          `${pagePath}: files.html`,
         );
+        const cssName = localFilename(
+          declaredFiles && Object.hasOwn(declaredFiles, "css")
+            ? declaredFiles.css
+            : names.css,
+          `${pagePath}: files.css`,
+        );
+        const files = {
+          page: pagePath,
+          html: resolve(folder, htmlName),
+          css: resolve(folder, cssName),
+        };
+        watch(files.html);
+        watch(files.css);
         if (
           metadata.type !== undefined &&
           !["flex", "grid"].includes(metadata.type)
@@ -111,6 +148,17 @@ export async function buildPresetRegistry(
           readFile(files.html, "utf8"),
           readFile(files.css, "utf8"),
         ]);
+        const sources: PageSource[] = [
+          { name: htmlName, code: html, language: "html", edit: true },
+          {
+            name: cssName,
+            code: css,
+            language: "css",
+            edit: true,
+            default: true,
+          },
+          { name: names.page, code: page, language: "mdx" },
+        ];
         discovered.push({
           ...metadata,
           editor: {
@@ -127,6 +175,7 @@ export async function buildPresetRegistry(
           ) as PresetRegistryEntry["files"],
           html,
           css,
+          sources,
         });
       }
       for (const child of children)
@@ -183,13 +232,22 @@ export function presetRegistryPlugin(config: PresetRegistryConfig): Plugin {
       const records: string[] = [];
       for (const [index, entry] of entries.entries()) {
         const page = resolve(root, entry.files.page);
-        this.addWatchFile(page);
         imports.push(`import * as Page${index} from ${JSON.stringify(page)};`);
-        records.push(
-          `{...${JSON.stringify(entry)}, Page: Page${index}.default, sources: Page${index}.sources ?? [], html: Page${index}.sources?.find(source => source.edit === true && source.language === "html")?.code ?? ${JSON.stringify(entry.html)}, css: Page${index}.sources?.find(source => source.edit === true && source.language === "css")?.code ?? ${JSON.stringify(entry.css)}}`,
-        );
+        records.push(`withPage(${JSON.stringify(entry)}, Page${index})`);
       }
-      return `${imports.join("\n")}\nexport const registry = { entries: [${records.join(",")}] };\nexport const PRESETS = registry.entries;`;
+      return `${imports.join("\n")}
+function withPage(entry, page) {
+  const sources = page.sources ?? entry.sources;
+  return {
+    ...entry,
+    Page: page.default,
+    sources,
+    html: sources.find(source => source.edit === true && source.language === "html")?.code ?? entry.html,
+    css: sources.find(source => source.edit === true && source.language === "css")?.code ?? entry.css,
+  };
+}
+export const registry = { entries: [${records.join(",")}] };
+export const PRESETS = registry.entries;`;
     },
     configureServer(server) {
       server.watcher.add(

@@ -35,6 +35,7 @@ export const INSPECTOR_FIELD_IDS = {
 
   appearanceBackground: "appearanceBackground",
   appearanceBorder: "appearanceBorder",
+  appearanceRadius: "appearanceRadius",
   appearanceEffects: "appearanceEffects",
   appearanceOutline: "appearanceOutline",
 

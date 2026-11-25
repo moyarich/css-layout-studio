@@ -13,48 +13,28 @@ editor:
   category: Utility
 title: Two-Column Form - Grid
 label: CSS Grid
+heading: "Two-Column Form"
+files:
+  html: index.html
+  css: styles.css
 ---
 
-import html from './index.html?raw';
-import css from './styles.css?raw';
-import layout from './layout.tsx?raw';
-import preview from './preview.tsx?raw';
-import page from './page.mdx?raw';
-
-export const sources = [
-  { name: 'index.html', code: html, language: 'html', edit: true },
-  { name: 'styles.css', code: css, language: 'css', edit: true, default: true },
-  { name: 'layout.tsx', code: layout, language: 'typescript' },
-  { name: 'preview.tsx', code: preview, language: 'typescript' },
-  { name: 'page.mdx', code: page, language: 'mdx' },
-];
-
-export const viewports = [
-  { id: "fluid", label: "Desktop", icon: "desktop" },
-  { id: "768", label: "Tablet", width: 768, icon: "tablet" },
-  { id: "375", label: "Phone", width: 375, icon: "phone" },
-];
-
 <StudioShell>
-<StudioHeader title="Layout Studio" breadcrumbs={[frontmatter.editor?.category, frontmatter.title]} homeTab="playground" onNavigate={props.studio.setTab} actions={<StudioActions sources={sources} />} />
+<PresetToolbar homeTab="playground" />
 <StudioBody>
-<LayoutLibrary groups={props.studio.groups} selectedId={props.studio.presetId} onSelect={props.studio.loadPreset} open={props.studio.libraryOpen} />
+<PresetLibrary />
 <Workspace>
-<PageHeading>
+<PresetPageTitle />
 
-# Two-Column Form
+::::: workspace-tabs playground
 
-Paired fields with full-width rows using CSS Grid.
+:::: workspace-tab overview | Overview
 
-</PageHeading>
+::: outline
+:::
 
-<WorkspaceTabs defaultValue="playground" value={props.studio.tab} onValueChange={props.studio.setTab} suffix={frontmatter.label}>
-
-<WorkspacePanel id="overview" label="Overview">
-
-<DocumentOutline title="Document outline" />
-
-<StudioLivePreview resizable hint="Select any region to adjust its layout in the inspector. HTML and CSS edits update the preview immediately." sources={sources} controls={<PreviewVariantControls options={props.studio.activeLayout.variants.map(variant => ({ id: variant.id, label: variant.label ?? variant.name }))} value={props.studio.presetId} onValueChange={props.studio.loadPreset} />} viewports={viewports} />
+::: preview-layout
+:::
 
 <Documentation>
 <DocumentationGrid>
@@ -62,7 +42,7 @@ Paired fields with full-width rows using CSS Grid.
 
 ## How it works
 
-Paired fields with full-width rows using CSS Grid.
+<PresetDescription />
 
 Use Playground to edit the HTML and CSS, select regions in the live preview, and compare the Flexbox and Grid implementations.
 
@@ -87,30 +67,33 @@ Visual structure
 
 </section>
 
-<InTheWild title="In the wild" examples={frontmatter.inTheWild} />
+::: in-the-wild
+:::
 
 </DocumentationGrid>
-
 </Documentation>
 
-</WorkspacePanel>
-<WorkspacePanel id="playground" label="Playground">
+::::
 
-<StudioLivePreview resizable hint="Select any region to adjust its layout in the inspector. HTML and CSS edits update the preview immediately." sources={sources} controls={<PreviewVariantControls options={props.studio.activeLayout.variants.map(variant => ({ id: variant.id, label: variant.label ?? variant.name }))} value={props.studio.presetId} onValueChange={props.studio.loadPreset} />} viewports={viewports} actions={
-<SourceFiles title={null} sources={sources.filter(source => source.edit)} onOpen={name => props.studio.showSource(name, "playground")}>
-<ul>
-<li><SourceLink href="./index.html">HTML</SourceLink></li>
-<li><SourceLink href="./styles.css">CSS</SourceLink></li>
-</ul>
-</SourceFiles>
-} />
+:::: workspace-tab playground | Playground
 
-<SourceEditor sources={sources.filter(source => source.edit)} />
+::: preview-layout
 
-</WorkspacePanel>
-</WorkspaceTabs>
+<PresetSourceFiles targetTab="playground" />
+
+:::
+
+::: source-editor
+:::
+
+::::
+
+:::::
+
 </Workspace>
-<InspectorSidebar footer={<AboutLayout title="About this layout" description="Preview, guidance and examples from page.mdx" targetTab="overview" onNavigate={props.studio.setTab} />} />
+<PresetInspector>
+<PresetAbout targetTab="overview" />
+</PresetInspector>
 </StudioBody>
 <StudioToast />
 </StudioShell>

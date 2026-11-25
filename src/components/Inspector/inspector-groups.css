@@ -1,0 +1,572 @@
+/* ==========================================================================
+   15. Shared Inspector Group
+   --------------------------------------------------------------------------
+   One DOM/class system is used for every custom RJSF group.
+
+   Visual hierarchy comes from data-group-type:
+
+   mode
+     Layout mode selection.
+
+   role
+     Flex container, flex item, grid container, grid item.
+
+   category
+     Large grouping such as General.
+
+   section
+     Box model, Typography, Appearance.
+
+   property
+     Width, Height, Border, Background, Margin, Padding, etc.
+   ========================================================================== */
+
+.inspector-group {
+  --inspector-group-accent: var(--primary);
+
+  position: relative;
+  min-width: 0;
+  overflow: visible;
+}
+
+.inspector-group > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.inspector-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.inspector-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+.inspector-group:is(
+  [data-group-type="mode"],
+  [data-group-type="role"],
+  [data-group-type="category"],
+  [data-group-type="property"]
+) {
+  --inspector-group-inner-radius: calc(var(--inspector-group-radius) - 1px);
+
+  border-radius: var(--inspector-group-radius);
+}
+
+.inspector-group > .inspector-group-header {
+  border-radius: var(--inspector-group-inner-radius, 0px);
+}
+
+.inspector-group[open] > .inspector-group-header {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.inspector-group-header:hover {
+  background: var(--inspector-hover-background);
+  color: var(--inspector-hover-foreground);
+}
+
+.inspector-group-header:focus-visible {
+  outline: 2px solid var(--inspector-focus-border);
+  outline-offset: -2px;
+}
+
+.inspector-group[open] > .inspector-group-header {
+  background: var(--inspector-open-background);
+}
+
+.inspector-group-icon {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 16%, transparent);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.inspector-group-title {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inspector-group-title strong {
+  min-width: 0;
+  color: var(--foreground);
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.inspector-group-title small {
+  min-width: 0;
+  color: var(--muted-foreground);
+  font-size: 8px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.inspector-group-badge,
+.inspector-group-count {
+  flex: 0 0 auto;
+  min-width: 20px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.inspector-group-badge {
+  color: var(--secondary-foreground);
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.inspector-group-chevron {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+  transition: transform 140ms ease;
+}
+
+.inspector-group[open] > .inspector-group-header .inspector-group-chevron {
+  transform: rotate(90deg);
+}
+
+.inspector-group-header:hover .inspector-group-icon,
+.inspector-group[open] > .inspector-group-header .inspector-group-icon {
+  transform: scale(1.06);
+}
+
+.inspector-group:not([open]) > .inspector-group-body {
+  display: none;
+}
+
+.inspector-group-body > [id$="__title"],
+.inspector-group-body > [id$="__description"] {
+  display: none;
+}
+
+/* ==========================================================================
+   16. Inspector Group: Layout Mode
+   --------------------------------------------------------------------------
+   Compact control card.
+
+   Important enough to stand alone, but visually lighter than the active
+   flex/grid role.
+   ========================================================================== */
+
+.inspector-group[data-group-type="mode"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 9px);
+  --inspector-group-accent: var(--inspector-group-mode-accent);
+
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 5%,
+    var(--muted)
+  );
+}
+
+.inspector-group[data-group-type="mode"] > .inspector-group-header {
+  min-height: 44px;
+  padding: 7px 9px;
+}
+
+.inspector-group[data-group-type="mode"] > .inspector-group-header:hover,
+.inspector-group[data-group-type="mode"][open] > .inspector-group-header {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 10%,
+    var(--card)
+  );
+}
+
+.inspector-group[data-group-type="mode"][open] > .inspector-group-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+}
+
+.inspector-group[data-group-type="mode"] > .inspector-group-body {
+  padding: 8px;
+  background: var(--card);
+  border-radius: 0 0 var(--inspector-group-inner-radius)
+    var(--inspector-group-inner-radius);
+}
+
+.inspector-group[data-group-type="mode"] .inspector-group-icon {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-mode-accent) 14%,
+    transparent
+  );
+  color: var(--inspector-group-mode-accent);
+}
+
+.inspector-group[data-group-type="mode"][data-has-preset="true"] {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+
+/* ==========================================================================
+   17. Inspector Group: Layout Role
+   --------------------------------------------------------------------------
+   Main active layout card.
+
+   Flex container / item and Grid container / item get the strongest visual
+   treatment because they contain the active layout controls.
+   ========================================================================== */
+
+.inspector-group[data-group-type="role"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 10px);
+  --inspector-group-accent: var(--inspector-group-role-accent);
+
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px color-mix(in srgb, var(--inspector-group-accent) 5%, transparent);
+}
+
+.inspector-group[data-group-type="role"] > .inspector-group-header {
+  min-height: 50px;
+  padding: 8px 10px 8px 8px;
+}
+
+.inspector-group[data-group-type="role"] > .inspector-group-header:hover,
+.inspector-group[data-group-type="role"][open] > .inspector-group-header {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--inspector-group-accent) 12%, var(--card)),
+    var(--card) 72%
+  );
+}
+
+.inspector-group[data-group-type="role"][open] > .inspector-group-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+}
+
+.inspector-group[data-group-type="role"] > .inspector-group-body {
+  padding: 10px;
+}
+
+.inspector-group[data-group-type="role"] .inspector-group-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-role-accent) 14%,
+    transparent
+  );
+  color: var(--inspector-group-role-accent);
+}
+
+.inspector-group[data-group-type="role"] .inspector-group-title strong {
+  font-size: 11px;
+}
+
+.inspector-group[data-group-type="role"] .inspector-group-title small {
+  font-size: 8.5px;
+}
+
+.inspector-group[data-group-type="role"][data-has-preset="true"] {
+  border-color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 45%,
+    var(--border)
+  );
+}
+
+/* ==========================================================================
+   18. Inspector Group: Category
+   --------------------------------------------------------------------------
+   Large semantic bucket such as "General".
+
+   This is intentionally different from a role card and different from the
+   smaller sections inside it.
+   ========================================================================== */
+
+.inspector-group[data-group-type="category"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 11px);
+  --inspector-group-accent: var(--inspector-group-category-accent);
+
+  margin: 16px 0 12px;
+  border: 1px solid var(--border);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--inspector-group-accent) 7%, var(--muted)),
+    var(--muted)
+  );
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.inspector-group[data-group-type="category"] > .inspector-group-header {
+  min-height: 46px;
+  padding: 8px 10px;
+}
+
+.inspector-group[data-group-type="category"] > .inspector-group-header:hover,
+.inspector-group[data-group-type="category"][open] > .inspector-group-header {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 11%,
+    transparent
+  );
+}
+
+.inspector-group[data-group-type="category"][open] > .inspector-group-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.inspector-group[data-group-type="category"] > .inspector-group-body {
+  padding: 10px;
+}
+
+.inspector-group[data-group-type="category"] .inspector-group-icon {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-category-accent) 16%,
+    transparent
+  );
+  color: var(--inspector-group-category-accent);
+}
+
+.inspector-group[data-group-type="category"] .inspector-group-title strong {
+  font-size: 11px;
+  letter-spacing: 0.025em;
+}
+
+.inspector-group[data-group-type="category"] .inspector-group-title small {
+  font-size: 8.5px;
+}
+
+.inspector-group[data-group-type="category"][data-has-preset="true"] {
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+}
+
+.inspector-group[data-group-type="category"][data-has-preset="true"]
+  > .inspector-group-header {
+  box-shadow: inset 2px 0 0 var(--primary);
+}
+
+/* ==========================================================================
+   19. Inspector Group: Section
+   --------------------------------------------------------------------------
+   Box Model / Typography / Appearance.
+
+   Sections deliberately do NOT look like another card. They act as dividers
+   and establish hierarchy for the property groups below them.
+   ========================================================================== */
+
+.inspector-group[data-group-type="section"] {
+  --inspector-group-accent: var(--inspector-group-section-accent);
+
+  margin: 12px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.inspector-group[data-group-type="section"] > .inspector-group-header {
+  min-height: 42px;
+  padding: 7px 6px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-radius: 6px;
+}
+
+.inspector-group[data-group-type="section"] > .inspector-group-header:hover {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 8%,
+    var(--accent)
+  );
+}
+
+.inspector-group[data-group-type="section"][open] > .inspector-group-header {
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 44%,
+    var(--border)
+  );
+  background: color-mix(in srgb, var(--inspector-group-accent) 6%, transparent);
+}
+
+.inspector-group[data-group-type="section"] > .inspector-group-body {
+  padding: 8px 0 2px;
+}
+
+.inspector-group[data-group-type="section"] .inspector-group-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-section-accent) 14%,
+    transparent
+  );
+  color: var(--inspector-group-section-accent);
+}
+
+.inspector-group[data-group-type="section"] .inspector-group-title strong {
+  font-size: 10.5px;
+  color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 30%,
+    var(--foreground)
+  );
+}
+
+.inspector-group[data-group-type="section"] .inspector-group-title small {
+  font-size: 8px;
+}
+
+.inspector-group[data-group-type="section"][data-has-preset="true"]
+  > .inspector-group-header {
+  box-shadow: inset 2px 0 0 var(--primary);
+}
+
+/* ==========================================================================
+   20. Inspector Group: Property Group
+   --------------------------------------------------------------------------
+   Width / Height / Border / Background / Margin / Padding / etc.
+
+   These are visually nested and intentionally lighter than sections and
+   layout roles.
+   ========================================================================== */
+
+.inspector-group[data-group-type="property"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 8px);
+  --inspector-group-accent: var(--inspector-group-property-accent);
+
+  margin: 8px 0 0 8px;
+  border: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 6%,
+    var(--muted)
+  );
+  box-shadow: none;
+}
+
+.inspector-group[data-group-type="property"]::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  bottom: 50%;
+  left: -9px;
+  width: 8px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+  border-left: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+  border-radius: 6px 0 0 6px;
+  pointer-events: none;
+}
+
+.inspector-group[data-group-type="property"] > .inspector-group-header {
+  min-height: 38px;
+  padding: 6px 8px;
+  background: transparent;
+}
+
+.inspector-group[data-group-type="property"] > .inspector-group-header:hover {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 20%,
+    var(--accent)
+  );
+  color: var(--inspector-hover-foreground);
+}
+
+.inspector-group[data-group-type="property"][open] > .inspector-group-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
+  background: color-mix(in srgb, var(--inspector-group-accent) 7%, var(--card));
+}
+
+.inspector-group[data-group-type="property"] > .inspector-group-body {
+  padding: 8px;
+  border-radius: 0 0 var(--inspector-group-inner-radius)
+    var(--inspector-group-inner-radius);
+  background: var(--card);
+}
+
+.inspector-group[data-group-type="property"] .inspector-group-title strong {
+  font-size: 10px;
+}
+
+.inspector-group[data-group-type="property"] .inspector-group-icon {
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-property-accent) 12%,
+    transparent
+  );
+  color: var(--inspector-group-property-accent);
+}
+
+.inspector-group[data-group-type="property"] .inspector-group-title small {
+  font-size: 8px;
+}
+
+.inspector-group[data-group-type="property"] .inspector-group-count {
+  min-width: 24px;
+  padding: 2px 7px;
+  border-color: color-mix(in srgb, var(--border) 58%, transparent);
+  background: transparent;
+  color: var(--muted-foreground);
+}
+
+.inspector-group[data-group-type="property"] .inspector-group-chevron {
+  width: 13px;
+  height: 13px;
+}
+
+.inspector-group[data-group-type="property"][data-has-preset="true"] {
+  border-color: color-mix(
+    in srgb,
+    var(--primary) 22%,
+    color-mix(in srgb, var(--border) 58%, transparent)
+  );
+}
+
+.inspector-group[data-group-type="property"][data-has-preset="true"]
+  > .inspector-group-header::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 12%, transparent);
+}

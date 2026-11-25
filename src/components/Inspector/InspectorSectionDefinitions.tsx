@@ -217,8 +217,16 @@ export const BackgroundSection: InspectorSectionDefinition = {
 export const BorderSection: InspectorSectionDefinition = {
   id: INSPECTOR_FIELD_IDS.appearanceBorder,
   title: "Border",
-  description: "Width, style, color and radius for each edge.",
-  fields: [...BORDER_FIELDS, ...BORDER_RADIUS_FIELDS],
+  description: "Width, style and color for each edge.",
+  fields: BORDER_FIELDS,
+};
+
+const RadiusSection: InspectorSectionDefinition = {
+  id: INSPECTOR_FIELD_IDS.appearanceRadius,
+  title: "Corner radius",
+  description:
+    "Use one value for both axes or two values for an elliptical corner.",
+  fields: BORDER_RADIUS_FIELDS,
 };
 
 export const EffectsSection: InspectorSectionDefinition = {
@@ -242,6 +250,7 @@ export const AppearanceSection: InspectorSectionDefinition = {
   sections: {
     background: BackgroundSection,
     border: BorderSection,
+    radius: RadiusSection,
     effects: EffectsSection,
     outline: OutlineSection,
   },

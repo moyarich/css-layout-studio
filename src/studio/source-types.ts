@@ -1,4 +1,4 @@
-/** A source imported and declared by the owning page.mdx. */
+/** A source available to the preset page and editor. */
 export interface PageSource {
   name: string;
   code: string;

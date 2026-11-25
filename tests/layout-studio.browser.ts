@@ -92,10 +92,14 @@ try {
   await page
     .locator(".editor-frame .monaco-editor textarea")
     .waitFor({ timeout: 30000 });
+  const previewNode = await page
+    .locator(".preview-shadow-host .container[data-editor-id]")
+    .elementHandle();
+  assert.ok(previewNode);
   await page.locator(".editor-frame .monaco-editor").click();
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.insertText(
-    ".container { width: 100%; height: 100%; display: grid; gap: 37px; }",
+    ".container { width: 100%; height: 100%; display: grid; gap: 37px; border: 2px solid red !important; border-radius: 12px 8px / 6px 4px; border-top-right-radius: 25%; }",
   );
   await page.waitForFunction(() =>
     document
@@ -103,6 +107,42 @@ try {
       ?.shadowRoot?.querySelector("#preview-styles")
       ?.textContent?.includes("37px"),
   );
+  assert.equal(await previewNode.evaluate((element) => element.isConnected), true);
+  await previewNode.dispose();
+  await page.getByRole("searchbox", { name: "Search inspector properties" }).fill("top border width");
+  await page.getByRole("button", { name: "Show details for border-top-width" }).click();
+  const borderDetails = page.getByRole("dialog", { name: "border-top-width details" });
+  assert.equal(
+    await borderDetails.locator(".inspector-field-tooltip-details > span").first().locator("code").textContent(),
+    "2px",
+  );
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Clear inspector search" }).click();
+  const inspectorSearch = page.getByRole("searchbox", { name: "Search inspector properties" });
+  await inspectorSearch.fill("corner radius");
+  await page.getByText("Corner radius", { exact: true }).waitFor();
+  const rightRadius = page.getByRole("spinbutton", { name: "Top-right radius", exact: true });
+  assert.equal(await rightRadius.inputValue(), "25");
+  const rightRadiusControl = page.locator(".inspector-field-control").filter({ has: rightRadius });
+  assert.equal(await rightRadiusControl.locator(".css-range-unit").inputValue(), "%");
+  await rightRadius.fill("30");
+  await rightRadius.blur();
+
+  const leftRadius = page.getByRole("textbox", { name: "Top-left radius", exact: true });
+  assert.equal(await leftRadius.inputValue(), "12px 6px");
+  await leftRadius.fill("14px 9px");
+  await leftRadius.blur();
+  await page.waitForFunction(() => {
+    const container = document.querySelector(".preview-shadow-host")?.shadowRoot?.querySelector(".container");
+    if (!container) return false;
+    const style = getComputedStyle(container);
+    return style.borderTopRightRadius === "30%" &&
+      style.borderTopLeftRadius === "14px 9px" &&
+      style.borderBottomRightRadius === "12px 6px";
+  });
+  await page.getByRole("button", { name: "Clear inspector search" }).click();
+
+
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
   assert.equal(await page.locator(".live-card").count(), 1);
   assert.equal(await page.locator(".source-peek").count(), 0);
@@ -118,10 +158,6 @@ try {
     await page.getByRole("button", { name: "page.mdx", exact: true }).count(),
     0,
   );
-  assert.equal(
-    await page.getByRole("button", { name: "layout.tsx", exact: true }).count(),
-    0,
-  );
   await page.getByRole("button", { name: "CSS", exact: true }).click();
   const downloadPromise = page.waitForEvent("download");
   await page
@@ -130,14 +166,13 @@ try {
   const download = await downloadPromise;
   const archive = unzipSync(await readFile((await download.path())!));
   const paths = Object.keys(archive);
-  assert.equal(paths.length, 5);
+  assert.deepEqual(
+    paths.map((path) => path.split("/").at(-1)).sort(),
+    ["index.html", "page.mdx", "styles.css"],
+  );
   assert.match(
     strFromU8(archive[paths.find((path) => path.endsWith("/styles.css"))!]),
     /37px/,
-  );
-  assert.doesNotMatch(
-    strFromU8(archive[paths.find((path) => path.endsWith("/preview.tsx"))!]),
-    /DocumentationPreviewContext|useContext/,
   );
 
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
@@ -184,12 +219,7 @@ try {
   );
   authoredFixture = await mkdtemp("presets/99-mdx-composition-");
   const original = "presets/02-content/01-article-aside/01-flex/";
-  for (const file of [
-    "index.html",
-    "styles.css",
-    "layout.tsx",
-    "preview.tsx",
-  ]) {
+  for (const file of ["index.html", "styles.css"]) {
     await writeFile(
       `${authoredFixture}/${file}`,
       await readFile(original + file),
@@ -390,6 +420,81 @@ try {
     "https://example.com/frontmatter",
   );
   await page.getByText("Unlinked example", { exact: true }).waitFor();
+  await writeFile(
+    `${authoredFixture}/canvas.html`,
+    '<div class="container">HTML selected by page.mdx</div>',
+  );
+  await writeFile(
+    `${authoredFixture}/canvas.css`,
+    ".container { display: grid; gap: 41px; }",
+  );
+  await writeFile(
+    `${authoredFixture}/page.mdx`,
+    `---
+id: authored-mdx-test
+title: Directive Composition Test
+heading: Directive workspace
+files:
+  html: canvas.html
+  css: canvas.css
+---
+<StudioShell>
+<StudioBody>
+<Workspace>
+<PresetPageTitle />
+
+::::: workspace-tabs inspect
+
+:::: workspace-tab notes | Notes first
+
+## Notes only
+
+::::
+
+:::: workspace-tab inspect | Inspect layout
+
+::: preview-layout Authored preview
+:::
+
+::: in-the-wild References
+
+[Authored link](https://example.com/)
+
+:::
+
+::::
+
+:::::
+
+</Workspace>
+</StudioBody>
+</StudioShell>
+`,
+  );
+  await page.reload();
+  await page
+    .getByRole("textbox", { name: "Search layouts" })
+    .fill("Directive Composition Test");
+  await page
+    .locator(".library-items button")
+    .filter({ hasText: "Directive Composition Test" })
+    .click();
+  await page.getByRole("heading", { name: "Directive workspace" }).waitFor();
+  const directiveTabs = page.getByRole("tablist", { name: "Workspace" }).getByRole("tab");
+  assert.deepEqual(await directiveTabs.allTextContents(), ["Notes first", "Inspect layout"]);
+  assert.equal(await directiveTabs.nth(1).getAttribute("aria-selected"), "true");
+  const directivePanel = page.getByRole("tabpanel");
+  assert.match(await directivePanel.innerText(), /Authored preview[\s\S]*References/);
+  const authoredCanvas = directivePanel.locator(".preview-shadow-host .container");
+  assert.equal(await authoredCanvas.textContent(), "HTML selected by page.mdx");
+  assert.equal(await authoredCanvas.evaluate((element) => getComputedStyle(element).gap), "41px");
+
+  assert.equal(await directivePanel.getByRole("link", { name: "Authored link" }).count(), 1);
+  assert.equal(await page.locator(".studio-inspector, .source-peek, .outline-tree-panel").count(), 0);
+  await directiveTabs.nth(0).click();
+  await directivePanel.getByRole("heading", { name: "Notes only" }).waitFor();
+  assert.equal(await directivePanel.locator(".live-card").count(), 0);
+
   assert.deepEqual(errors, []);
   console.log(
     "Passed: MDX rendering, variants, viewports, outline, live CSS edits, source links, ZIP contents, search, theme, mobile layout, and fully authored MDX composition.",

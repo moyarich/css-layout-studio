@@ -18,6 +18,7 @@ import {
   Palette,
   PaintBucket,
   PanelTop,
+  Radius,
   RotateCw,
   Rows3,
   Scaling,
@@ -226,6 +227,10 @@ export const inspectorCustomFields: RegistryFieldsType = {
 
   [INSPECTOR_FIELD_IDS.appearanceBorder]: (props) => (
     <InspectorGroupField {...props} groupType="property" icon={Frame} showCount />
+  ),
+
+  [INSPECTOR_FIELD_IDS.appearanceRadius]: (props) => (
+    <InspectorGroupField {...props} groupType="property" icon={Radius} showCount />
   ),
 
   [INSPECTOR_FIELD_IDS.appearanceEffects]: (props) => (

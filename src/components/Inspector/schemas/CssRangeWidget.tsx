@@ -50,7 +50,10 @@ export function CssRangeWidget(props: WidgetProps) {
         (unit): unit is string => typeof unit === "string",
       )
     : [defaultUnit];
-  const authoredUnit = localValue.match(/[a-z%]+$/i)?.[0];
+  const authoredUnit = localValue
+    .trim()
+    .match(/[a-z%]+$/i)?.[0]
+    ?.toLowerCase();
   const unit =
     authoredUnit && units.includes(authoredUnit) ? authoredUnit : defaultUnit;
   const parsed = Number.parseFloat(localValue || String(min));
@@ -62,10 +65,29 @@ export function CssRangeWidget(props: WidgetProps) {
   const numberInputValue = localValue.trim() ? numericValue : "";
   const toNumberCssValue = (value: string) =>
     value.trim() ? `${value}${unit}` : "";
-  const numericSource = /^-?(?:\d+\.?\d*|\.\d+)(?:[a-z%]+)?$/i.test(localValue);
-  const [mode, setMode] = useState<"range" | "number" | "text">(
-    numericSource || props.value === undefined ? "range" : "text",
+  const numericSource = /^-?(?:\d+\.?\d*|\.\d+)(?:[a-z%]+)?$/i.test(
+    localValue.trim(),
   );
+  const [preferredMode, setPreferredMode] = useState<
+    "range" | "number" | "text"
+  >(
+    props.options.rangeDefaultMode === "number"
+      ? "number"
+      : numericSource || props.value === undefined
+        ? "range"
+        : "text",
+  );
+  const canRepresentValue =
+    !localValue.trim() ||
+    (numericSource &&
+      parsed >= min &&
+      parsed <= max &&
+      (authoredUnit
+        ? units.includes(authoredUnit)
+        : parsed === 0 || units.includes("")));
+  const requiresText =
+    props.options.rangePreserveValue === true && !canRepresentValue;
+  const mode = requiresText ? "text" : preferredMode;
   const nextMode =
     mode === "range" ? "number" : mode === "number" ? "text" : "range";
   const ModeIcon =
@@ -73,13 +95,13 @@ export function CssRangeWidget(props: WidgetProps) {
   const modeLabel =
     mode === "range" ? "Slider" : mode === "number" ? "Number" : "CSS value";
 
-  const modeButton = (
+  const modeButton = !requiresText && (
     <button
       type="button"
       className="css-range-mode"
       aria-label={`${modeLabel} input; switch to ${nextMode}`}
       title={`${modeLabel} input · click for ${nextMode}`}
-      onClick={() => setMode(nextMode)}
+      onClick={() => setPreferredMode(nextMode)}
     >
       <ModeIcon size={12} aria-hidden="true" />
     </button>
@@ -87,7 +109,9 @@ export function CssRangeWidget(props: WidgetProps) {
 
   if (mode === "text") {
     return (
-      <div className="css-range-widget css-range-widget-text">
+      <div
+        className={`css-range-widget css-range-widget-text${requiresText ? " css-range-widget-text-only" : ""}`}
+      >
         <input
           id={props.id}
           name={props.htmlName}
@@ -95,7 +119,10 @@ export function CssRangeWidget(props: WidgetProps) {
           value={localValue}
           placeholder={props.placeholder}
           disabled={props.disabled || props.readonly}
-          onChange={(event) => updateValue(event.currentTarget.value)}
+          onChange={(event) => {
+            setPreferredMode("text");
+            updateValue(event.currentTarget.value);
+          }}
           onBlur={(event) => finishValue(event.currentTarget.value)}
           onFocus={(event) =>
             props.onFocus(props.id, event.currentTarget.value)

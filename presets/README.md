@@ -8,21 +8,14 @@ presets/<order>-<category>/<order>-<layout>/
   01-flex/
     index.html
     styles.css
-    layout.tsx
-    preview.tsx
     page.mdx
   02-grid/
     ...same files
 ```
 
 - `page.mdx` frontmatter: ID, title, description, type, examples, and editor settings.
-- `index.html` and `styles.css`: authoritative editable sources loaded by the editor.
-- `layout.tsx`: standalone React markup. Import `styles.css` when using it in an app.
-- `preview.tsx`: isolated iframe preview of the HTML/CSS for documentation.
-- `page.mdx`: Documentation page with frontmatter, preview, and source links.
-
-The two TSX files serve the reusable layout and its documentation preview.
-Changes to HTML should also be reflected in `layout.tsx`; previews always use the HTML/CSS.
+- `index.html` and `styles.css`: the editable sources selected by the page’s frontmatter.
+- `page.mdx`: Documentation page with frontmatter and layout-specific guidance.
 
 ## Adding a preset
 
@@ -36,7 +29,7 @@ Changes to HTML should also be reflected in `layout.tsx`; previews always use th
 6. Use `.container` as the root with `width: 100%; height: 100%;`.
 
 `registry.config.ts` defines the source directories and optional source filenames.
-The Vite plugin in `vite-plugins/preset-registry.ts` discovers `page.mdx` files, reads their YAML frontmatter, and exposes
+The Vite plugin in `vite-plugins/preset-registry/preset-registry.ts` discovers `page.mdx` files, reads their YAML frontmatter, and exposes
 `virtual:preset-registry`. `index.ts` only re-exports the generated registry.
 
 Sorting follows the folder hierarchy: numeric prefixes first, then natural
@@ -54,11 +47,58 @@ with an error. Development reloads when source files or folders change.
 import { PRESETS } from "./presets";
 ```
 
-##Documentation
+## Documentation
 
-Point a registry source at this directory and discover `**/page.mdx`.
-Pages use the CLI scaffold's YAML frontmatter and relative component imports.
-Layout Studio compiles MDX through Vite and renders these pages directly; no separate documentation app is required.
+Each `page.mdx` chooses the rendered sections and their order. Frontmatter
+supplies data such as the heading, preview height in pixels, and examples.
+
+The standard preset pages use shared JSX components for the shell and named
+directives for workspace content. A tab uses a stable ID and a visible label,
+separated by a pipe. The title on `workspace-tabs` selects the default tab ID.
+
+```mdx
+<StudioShell>
+<StudioBody>
+<Workspace>
+<PresetPageTitle />
+
+::::: workspace-tabs example
+
+:::: workspace-tab example | Example
+
+::: preview-layout
+:::
+
+::::
+
+:::::
+
+</Workspace>
+</StudioBody>
+</StudioShell>
+```
+
+Place `outline`, `in-the-wild`, and `source-editor` directives wherever they
+belong, or omit them. Text inside `in-the-wild` replaces the frontmatter
+examples. Children of `preview-layout` appear in its toolbar, so a page can
+add `<PresetSourceFiles targetTab="playground" />` where source buttons are
+needed. Add `<PresetInspector />` alongside `<Workspace>` to show the
+inspector. The pages can also use the individual JSX components directly.
+
+Point the page at its HTML and CSS in frontmatter. These files provide the
+initial canvas and the editable source tabs. Paths are filenames in the same
+folder as the page.
+
+```yaml
+files:
+  html: index.html
+  css: styles.css
+```
+
+If either key is omitted, the registry uses that source group’s configured filename.
+
+The registry exposes the configured HTML, CSS, and MDX files. Pages can export
+a custom `sources` array to override that list.
 
 ---
 
