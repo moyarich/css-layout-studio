@@ -119,6 +119,15 @@ span.css-range-unit {
 .inspector-field-actions .css-range-mode {
   inline-size: 24px;
   block-size: 24px;
+  border-color: transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: color-mix(in srgb, var(--muted-foreground) 76%, var(--card));
+}
+
+.inspector-field-actions .css-range-mode > svg {
+  inline-size: 14px;
+  block-size: 14px;
 }
 
 .css-range-mode:hover {
