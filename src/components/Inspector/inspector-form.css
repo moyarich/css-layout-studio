@@ -57,8 +57,12 @@
 
 .inspector-field-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
+}
+
+.inspector-field-row:has(> .inspector-field-info) {
+  grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 4px;
 }
 
@@ -106,6 +110,23 @@
 .inspector-field-info {
   display: inline-flex;
   flex: none;
+}
+
+.range-widget-wrapper > .label-field-wrapper {
+  column-gap: 8px;
+  margin-block-end: 4px;
+}
+
+.inspector-field-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  margin-inline-start: auto;
+}
+
+.inspector-field-mode-slot {
+  display: contents;
 }
 
 .inspector-field-info-trigger {
