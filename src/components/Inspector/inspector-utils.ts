@@ -32,6 +32,38 @@ export const INITIALLY_OPEN_GROUPS = new Set([
   "sizeHeight",
 ]);
 
+const LENGTH_UNITS = [
+  "px",
+  "rem",
+  "em",
+  "ch",
+  "ex",
+  "cap",
+  "ic",
+  "lh",
+  "rch",
+  "rex",
+  "rcap",
+  "ric",
+  "rlh",
+  "cm",
+  "mm",
+  "q",
+  "in",
+  "pt",
+  "pc",
+  ...["", "s", "l", "d"].flatMap((prefix) =>
+    ["vw", "vh", "vi", "vb", "vmin", "vmax"].map((unit) => prefix + unit),
+  ),
+  "cqw",
+  "cqh",
+  "cqi",
+  "cqb",
+  "cqmin",
+  "cqmax",
+];
+const LENGTH_PERCENTAGE_UNITS = ["%", ...LENGTH_UNITS];
+
 function getRangeOptions(property: string): Record<string, unknown> | null {
   if (
     property === "gap" ||
@@ -43,7 +75,7 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
       rangeMax: 96,
       rangeStep: 1,
       rangeUnit: "px",
-      rangeUnits: ["px", "rem", "em", "%"],
+      rangeUnits: LENGTH_PERCENTAGE_UNITS,
     };
   }
 
@@ -53,7 +85,7 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
       rangeMax: 256,
       rangeStep: 1,
       rangeUnit: "px",
-      rangeUnits: ["px", "rem", "em", "%", "vw", "vh"],
+      rangeUnits: LENGTH_PERCENTAGE_UNITS,
     };
   }
 
@@ -63,7 +95,7 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
       rangeMax: 256,
       rangeStep: 1,
       rangeUnit: "px",
-      rangeUnits: ["px", "rem", "em", "%", "vw", "vh"],
+      rangeUnits: LENGTH_PERCENTAGE_UNITS,
     };
   }
 
@@ -76,7 +108,7 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
       rangeMax: 1200,
       rangeStep: 1,
       rangeUnit: "px",
-      rangeUnits: ["px", "rem", "em", "%", "vw", "vh"],
+      rangeUnits: LENGTH_PERCENTAGE_UNITS,
     };
   }
 
@@ -84,10 +116,13 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
     return {
       rangeMax: 256,
       rangeStep: 0.01,
-      rangeUnits: ["px", "%", "rem", "em"],
+      rangeUnits: LENGTH_PERCENTAGE_UNITS,
       rangeDefaultMode: "number",
-      rangePreserveValue: true,
     };
+  }
+
+  if (/^border-(?:top|right|bottom|left)-width$/.test(property)) {
+    return { rangeUnits: LENGTH_UNITS };
   }
 
   if (property === "opacity") {
@@ -96,7 +131,9 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
       rangeMax: 1,
       rangeStep: 0.01,
       rangeUnit: "",
-      rangeUnits: [""],
+      rangeUnits: ["", "%"],
+      rangePercentMax: 100,
+      rangePercentStep: 1,
     };
   }
 
