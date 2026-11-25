@@ -28,7 +28,7 @@
   color: var(--foreground);
 }
 
-.css-range-value:focus-within {
+.css-range-value:has(:focus-visible) {
   border-color: var(--inspector-focus-border, var(--ring));
   outline: 2px solid var(--inspector-focus-border, var(--ring));
   outline-offset: 1px;
@@ -54,6 +54,12 @@
 .inspector .css-range-widget-text input {
   min-inline-size: 0;
   min-block-size: var(--css-range-control-height);
+}
+
+.inspector .css-range-widget-text input:focus-visible {
+  outline: 2px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: 1px;
+  box-shadow: none;
 }
 
 .css-range-value output {
@@ -177,16 +183,27 @@ span.css-range-unit {
   font-size: 11px;
 }
 
-.css-range-mode[aria-expanded="true"],
-.css-range-mode-menu button:hover:not(:disabled) {
+.css-range-mode-menu button:hover:not(:disabled, [aria-checked="true"]) {
   background: var(--inspector-hover-background, var(--accent));
   color: var(--inspector-hover-foreground, var(--accent-foreground));
 }
 
+.css-range-mode[aria-expanded="true"],
 .css-range-mode-menu [aria-checked="true"] {
   background: var(--inspector-selected-background, var(--accent));
   color: var(--inspector-selected-foreground, var(--accent-foreground));
+}
+
+.css-range-mode[aria-expanded="true"] {
+  border-color: var(--inspector-selected-border, var(--border));
+}
+
+.css-range-mode-menu [aria-checked="true"] {
   font-weight: 650;
+}
+
+.css-range-mode-menu [aria-checked="true"] > svg:last-child {
+  color: var(--primary);
 }
 
 .inspector .css-range-mode-menu button:focus-visible {

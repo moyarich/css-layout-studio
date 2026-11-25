@@ -138,12 +138,27 @@ try {
   const modeButton = rightRadiusControl.getByRole("button", { name: "Input mode" });
   const modes = rightRadiusControl.getByRole("menu", { name: "Input mode" });
   await modeButton.click();
+  await modes.getByRole("menuitemradio", { name: "Number", checked: true }).waitFor();
+  await modeButton.click();
+  await modes.waitFor({ state: "hidden" });
+
+  await modeButton.press("ArrowDown");
+  await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "Slider");
+  const focusedMode = modes.getByRole("menuitemradio", { name: "Slider", checked: false });
+  assert.equal(await focusedMode.evaluate((item) => getComputedStyle(item).outlineStyle), "solid");
+  await modes.getByRole("menuitemradio", { name: "Number", checked: true }).waitFor();
+  await page.keyboard.press("Escape");
+  await modes.waitFor({ state: "hidden" });
+  assert.equal(await modeButton.evaluate((button) => document.activeElement === button), true);
+
+  await modeButton.click();
   await modes.getByRole("menuitemradio", { name: "CSS value" }).click();
   const cssRadius = rightRadiusControl.getByRole("textbox", { name: "Top-right radius" });
   assert.equal(await cssRadius.inputValue(), "25%");
+  assert.equal(await cssRadius.evaluate((input) => document.activeElement === input), true);
 
   await modeButton.press("Enter");
-  await modes.getByRole("menuitemradio", { name: "CSS value", checked: true }).waitFor();
+  await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "CSS value");
   await page.keyboard.press("Home");
   await page.keyboard.press("Enter");
   const radiusSlider = rightRadiusControl.getByRole("slider", { name: "Top-right radius" });

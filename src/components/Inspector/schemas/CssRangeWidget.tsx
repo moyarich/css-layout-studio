@@ -1,6 +1,6 @@
 import type { WidgetProps } from "@rjsf/utils";
 import { Braces, Check, Ellipsis, Hash, SlidersHorizontal } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 function numberOption(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -29,13 +29,11 @@ function CssRangeModeMenu({
   const trigger = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
 
-  function showMenu(
-    target: HTMLButtonElement,
-    focus: "active" | "first" | "last",
-  ) {
+  const focusOnOpen = useRef<"active" | "first" | "last">("active");
+
+  function placeMenu(target: HTMLButtonElement) {
     const popover = menu.current;
     if (!popover) return;
-
     const rect = target.getBoundingClientRect();
     const above = window.innerHeight - rect.bottom < 112 && rect.top > 112;
     popover.style.top = above ? "auto" : `${rect.bottom + 4}px`;
@@ -43,16 +41,6 @@ function CssRangeModeMenu({
       ? `${window.innerHeight - rect.top + 4}px`
       : "auto";
     popover.style.right = `clamp(8px, ${window.innerWidth - rect.right}px, calc(100vw - 152px))`;
-    popover.showPopover();
-
-    const items = popover.querySelectorAll<HTMLButtonElement>(
-      "button:not(:disabled)",
-    );
-    const item =
-      focus === "active"
-        ? popover.querySelector<HTMLButtonElement>('[aria-checked="true"]')
-        : items[focus === "first" ? 0 : items.length - 1];
-    item?.focus({ preventScroll: true });
   }
 
   return (
@@ -66,18 +54,16 @@ function CssRangeModeMenu({
         aria-controls={id}
         ref={trigger}
         title="Input mode"
+        popoverTarget={id}
         onClick={(event) => {
-          if (menu.current?.matches(":popover-open"))
-            menu.current.hidePopover();
-          else showMenu(event.currentTarget, "active");
+          if (!menu.current?.matches(":popover-open"))
+            placeMenu(event.currentTarget);
         }}
         onKeyDown={(event) => {
           if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
           event.preventDefault();
-          showMenu(
-            event.currentTarget,
-            event.key === "ArrowDown" ? "first" : "last",
-          );
+          focusOnOpen.current = event.key === "ArrowDown" ? "first" : "last";
+          event.currentTarget.click();
         }}
       >
         <Ellipsis size={17} aria-hidden="true" />
@@ -89,12 +75,29 @@ function CssRangeModeMenu({
         role="menu"
         aria-label="Input mode"
         className="css-range-mode-menu"
-        onToggle={(event) => setOpen(event.newState === "open")}
+        onToggle={(event) => {
+          const isOpen = event.newState === "open";
+          setOpen(isOpen);
+          if (!isOpen) return;
+          const popover = event.currentTarget;
+          const items = popover.querySelectorAll<HTMLButtonElement>(
+            "button:not(:disabled)",
+          );
+          const focus = focusOnOpen.current;
+          focusOnOpen.current = "active";
+          const item =
+            focus === "active"
+              ? popover.querySelector<HTMLButtonElement>(
+                  '[aria-checked="true"]',
+                )
+              : items[focus === "first" ? 0 : items.length - 1];
+          item?.focus({ preventScroll: true });
+        }}
         onKeyDown={(event) => {
           if (event.key === "Escape" || event.key === "Tab") {
             if (event.key === "Escape") event.preventDefault();
             menu.current?.hidePopover();
-            trigger.current?.focus();
+            trigger.current?.focus({ preventScroll: true });
             return;
           }
           const items = Array.from(
@@ -140,7 +143,9 @@ function CssRangeModeMenu({
             tabIndex={-1}
             onClick={() => {
               menu.current?.hidePopover();
-              onChange(option);
+              if (option === mode)
+                trigger.current?.focus({ preventScroll: true });
+              else onChange(option);
             }}
           >
             <Icon size={14} aria-hidden="true" />
@@ -239,14 +244,21 @@ export function CssRangeWidget(props: WidgetProps) {
       ? "number"
       : preferredMode;
 
+  const focusOnModeChange = useRef(false);
+  useLayoutEffect(() => {
+    if (!focusOnModeChange.current) return;
+    focusOnModeChange.current = false;
+    document.getElementById(props.id)?.focus({ preventScroll: true });
+  }, [mode, props.id]);
+
   const modeButton = (
     <CssRangeModeMenu
       mode={mode}
       canUseNumber={canUseNumber}
       canUseSlider={canUseSlider}
       onChange={(nextMode) => {
+        focusOnModeChange.current = true;
         setPreferredMode(nextMode);
-        requestAnimationFrame(() => document.getElementById(props.id)?.focus());
       }}
     />
   );
