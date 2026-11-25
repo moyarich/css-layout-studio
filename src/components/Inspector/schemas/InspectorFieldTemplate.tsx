@@ -86,7 +86,7 @@ function FieldInfo({
         popoverTargetAction="toggle"
         onClick={positionPopover}
       >
-        <Info size={13} aria-hidden="true" />
+        <Info size={11} strokeWidth={1.6} aria-hidden="true" />
       </button>
       <div
         ref={popoverRef}
