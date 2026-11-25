@@ -86,7 +86,7 @@ function FieldInfo({
         popoverTargetAction="toggle"
         onClick={positionPopover}
       >
-        <Info size={13} aria-hidden="true" />
+        <Info size={11} strokeWidth={1.6} aria-hidden="true" />
       </button>
       <div
         ref={popoverRef}
@@ -185,32 +185,34 @@ export function InspectorFieldTemplate(props: FieldTemplateProps) {
       registry={registry}
     >
       <div className="flex flex-col gap-2">
-        <div
-          className={clsx("inspector-field-control", {
-            [`${uiOptions.widgetId}-widget-wrapper`]: uiOptions.widgetId,
-          })}
-        >
-          {displayLabel && !isCheckbox ? (
-            <div
-              className={`label-field-wrapper${uiOptions.sourceProperty ? " has-preset" : ""}`}
-            >
-              <label
-                className={rawErrors.length ? "text-destructive" : ""}
-                htmlFor={id}
+        <div className="inspector-field-row">
+          <div
+            className={clsx("inspector-field-control", {
+              [`${uiOptions.widgetId}-widget-wrapper`]: uiOptions.widgetId,
+            })}
+          >
+            {displayLabel && !isCheckbox ? (
+              <div
+                className={`label-field-wrapper${uiOptions.sourceProperty ? " has-preset" : ""}`}
               >
-                {label}
-                {required ? <span className="required">*</span> : null}
-              </label>
-              {property ? (
-                <FieldInfo
-                  property={property}
-                  description={rawDescription}
-                  options={uiOptions}
-                />
-              ) : null}
-            </div>
+                <label
+                  className={rawErrors.length ? "text-destructive" : ""}
+                  htmlFor={id}
+                >
+                  {label}
+                  {required ? <span className="required">*</span> : null}
+                </label>
+              </div>
+            ) : null}
+            {children}
+          </div>
+          {displayLabel && !isCheckbox && property ? (
+            <FieldInfo
+              property={property}
+              description={rawDescription}
+              options={uiOptions}
+            />
           ) : null}
-          {children}
         </div>
         <div className="additional-info">
           {displayLabel && rawDescription && !isCheckbox && !property

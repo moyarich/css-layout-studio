@@ -123,8 +123,60 @@ try {
   await page.getByText("Corner radius", { exact: true }).waitFor();
   const rightRadius = page.getByRole("spinbutton", { name: "Top-right radius", exact: true });
   assert.equal(await rightRadius.inputValue(), "25");
-  const rightRadiusControl = page.locator(".inspector-field-control").filter({ has: rightRadius });
-  assert.equal(await rightRadiusControl.locator(".css-range-unit").inputValue(), "%");
+  const rightRadiusControl = page.locator(".range-widget-wrapper").filter({
+    has: page.getByText("Top-right radius", { exact: true }),
+  });
+  const unitControl = rightRadiusControl.locator(".css-range-unit");
+  assert.equal(await unitControl.inputValue(), "%");
+  await unitControl.selectOption("cqi");
+  await page.waitForFunction(() =>
+    document.querySelector(".preview-shadow-host")?.shadowRoot
+      ?.querySelector("#preview-styles")?.textContent?.includes("25cqi"),
+  );
+  await unitControl.selectOption("%");
+
+  const modeButton = rightRadiusControl.getByRole("button", { name: "Input mode" });
+  const modes = rightRadiusControl.getByRole("menu", { name: "Input mode" });
+  await modeButton.click();
+  await modes.getByRole("menuitemradio", { name: "Number", checked: true }).waitFor();
+  await modeButton.click();
+  await modes.waitFor({ state: "hidden" });
+
+  await modeButton.press("ArrowDown");
+  await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "Slider");
+  const focusedMode = modes.getByRole("menuitemradio", { name: "Slider", checked: false });
+  assert.equal(await focusedMode.evaluate((item) => getComputedStyle(item).outlineStyle), "solid");
+  await modes.getByRole("menuitemradio", { name: "Number", checked: true }).waitFor();
+  await page.keyboard.press("Escape");
+  await modes.waitFor({ state: "hidden" });
+  assert.equal(await modeButton.evaluate((button) => document.activeElement === button), true);
+
+  await modeButton.click();
+  await modes.getByRole("menuitemradio", { name: "CSS value" }).click();
+  const cssRadius = rightRadiusControl.getByRole("textbox", { name: "Top-right radius" });
+  assert.equal(await cssRadius.inputValue(), "25%");
+  assert.equal(await cssRadius.evaluate((input) => document.activeElement === input), true);
+
+  await modeButton.press("Enter");
+  await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "CSS value");
+  await page.keyboard.press("Home");
+  await page.keyboard.press("Enter");
+  const radiusSlider = rightRadiusControl.getByRole("slider", { name: "Top-right radius" });
+  await radiusSlider.waitFor();
+  await rightRadiusControl.evaluate((field) => { field.style.inlineSize = "140px"; });
+  assert.equal(
+    await radiusSlider.evaluate((input) => {
+      const widget = input.closest(".css-range-widget")!;
+      const control = widget.querySelector(".css-range-value")!;
+      return input.clientWidth === widget.clientWidth &&
+        widget.scrollWidth === widget.clientWidth &&
+        input.getBoundingClientRect().bottom <= control.getBoundingClientRect().top;
+    }),
+    true,
+  );
+  await rightRadiusControl.evaluate((field) => { field.style.removeProperty("inline-size"); });
+  await modeButton.click();
+  await modes.getByRole("menuitemradio", { name: "Number" }).click();
   await rightRadius.fill("30");
   await rightRadius.blur();
 

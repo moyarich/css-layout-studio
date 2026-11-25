@@ -1,105 +1,217 @@
-/* ==========================================================================
-   24. CSS Range Widget
-   ========================================================================== */
+.range-widget-wrapper {
+  container: inspector-range / inline-size;
+  min-inline-size: 0;
+}
 
 .css-range-widget {
+  --css-range-control-height: 32px;
+
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    34px
-    46px
-    25px;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 9px;
-  min-height: 32px;
+  gap: 6px;
+  min-inline-size: 0;
 }
 
-.css-range-widget-number {
-  grid-template-columns:
-    minmax(0, 1fr)
-    auto
-    25px;
+.css-range-widget-slider {
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
-.css-range-widget-unitless {
-  grid-template-columns:
-    minmax(0, 1fr)
-    34px
-    25px;
+.css-range-value {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  min-block-size: var(--css-range-control-height);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--card);
+  color: var(--foreground);
 }
 
-.css-range-widget-number.css-range-widget-unitless {
-  grid-template-columns:
-    minmax(0, 1fr)
-    25px;
+.css-range-value:has(:focus-visible) {
+  border-color: var(--inspector-focus-border, var(--ring));
+  outline: 2px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: 1px;
 }
 
-.css-range-widget-text {
-  grid-template-columns:
-    minmax(0, 1fr)
-    25px;
+.inspector .css-range-value input[type="number"] {
+  flex: 1;
+  min-inline-size: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+  font-variant-numeric: tabular-nums;
 }
 
-.css-range-widget-text-only {
-  grid-template-columns: minmax(0, 1fr);
+.inspector .css-range-value input:focus-visible,
+.inspector .css-range-value select:focus-visible {
+  outline: none;
+  background: var(--inspector-selected-background, var(--accent));
+  box-shadow: none;
+}
+
+.inspector .css-range-widget-text input {
+  min-inline-size: 0;
+  min-block-size: var(--css-range-control-height);
+}
+
+.inspector .css-range-widget-text input:focus-visible {
+  outline: 2px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.css-range-value output {
+  min-inline-size: 3.5ch;
+  padding-inline: 6px;
+  font:
+    600 10px/1.2 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.inspector .css-range-unit {
+  flex: none;
+  inline-size: auto;
+  min-inline-size: 34px;
+  padding-inline: 5px;
+  border: 0;
+  border-inline-start: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.inspector select.css-range-unit {
+  block-size: 24px;
+}
+
+span.css-range-unit {
+  text-align: center;
 }
 
 .css-range-mode {
   display: grid;
-  width: 25px;
-  height: 25px;
+  inline-size: var(--css-range-control-height);
+  block-size: var(--css-range-control-height);
   padding: 0;
   place-items: center;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--muted);
+  border-radius: 7px;
+  background: var(--card);
   color: var(--muted-foreground);
 }
 
-.css-range-mode:hover,
-.css-range-mode:focus-visible {
-  border-color: var(--primary);
-  outline: none;
-  color: var(--primary);
+.css-range-mode:hover {
+  border-color: var(--inspector-hover-border, var(--border));
+  background: var(--inspector-hover-background, var(--accent));
+  color: var(--inspector-hover-foreground, var(--accent-foreground));
 }
 
 .inspector .css-range-widget input[type="range"] {
-  width: 100%;
-  height: 4px;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--css-range-control-height);
   padding: 0;
   border: 0;
-  border-radius: 999px;
-  background: var(--primary);
+  background: transparent;
   box-shadow: none;
   accent-color: var(--primary);
   cursor: ew-resize;
 }
 
-.inspector .css-range-widget input[type="range"]:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+.inspector .css-range-widget input[type="range"]:disabled {
+  cursor: default;
+}
+
+.inspector .css-range-widget input[type="range"]:focus-visible,
+.inspector .css-range-widget .css-range-mode:focus-visible {
+  outline: 2px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: 1px;
   box-shadow: none;
 }
 
-.css-range-widget output {
-  padding: 4px 6px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--card);
-  color: var(--foreground);
-  font:
-    600 9px/1.2 ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace;
-  text-align: center;
+@container inspector-range (width < 176px) {
+  .css-range-widget-slider {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+
+  .css-range-widget-slider input[type="range"] {
+    grid-column: 1 / -1;
+  }
+
+  .css-range-widget-slider .css-range-value {
+    justify-self: end;
+  }
 }
 
-.inspector .css-range-unit {
-  width: 48px;
-  height: 27px;
-  padding: 0 4px;
-  border-radius: 6px;
-  font-size: 9px;
+.css-range-mode-menu {
+  position: fixed;
+  inset: auto;
+  inline-size: 144px;
+  max-inline-size: calc(100vw - 16px);
+  max-block-size: calc(100dvh - 16px);
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: var(--shadow-lg);
+}
+
+.css-range-mode-menu button {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 13px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  font-size: 11px;
+}
+
+.css-range-mode-menu button:hover:not(:disabled, [aria-checked="true"]) {
+  background: var(--inspector-hover-background, var(--accent));
+  color: var(--inspector-hover-foreground, var(--accent-foreground));
+}
+
+.css-range-mode[aria-expanded="true"],
+.css-range-mode-menu [aria-checked="true"] {
+  background: var(--inspector-selected-background, var(--accent));
+  color: var(--inspector-selected-foreground, var(--accent-foreground));
+}
+
+.css-range-mode[aria-expanded="true"] {
+  border-color: var(--inspector-selected-border, var(--border));
+}
+
+.css-range-mode-menu [aria-checked="true"] {
   font-weight: 650;
+}
+
+.css-range-mode-menu [aria-checked="true"] > svg:last-child {
+  color: var(--primary);
+}
+
+.inspector .css-range-mode-menu button:focus-visible {
+  outline: 2px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: -2px;
+}
+
+.css-range-mode-menu button:disabled {
+  color: var(--muted-foreground);
+  opacity: 0.6;
 }

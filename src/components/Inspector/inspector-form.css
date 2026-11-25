@@ -55,10 +55,20 @@
   font-size: 10px;
 }
 
+.inspector-field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 4px;
+}
+
+.inspector-field-row:has(> .select-widget-wrapper) {
+  align-items: center;
+}
+
 .inspector-field-control .label-field-wrapper {
   display: flex;
   align-items: center;
-  gap: 5px;
   min-width: 0;
 }
 
@@ -100,14 +110,14 @@
 
 .inspector-field-info-trigger {
   display: grid;
-  width: 18px;
-  height: 18px;
+  inline-size: 20px;
+  block-size: 20px;
   padding: 0;
   place-items: center;
   border: 0;
-  border-radius: 999px;
+  border-radius: 5px;
   background: transparent;
-  color: var(--muted-foreground);
+  color: color-mix(in srgb, var(--muted-foreground) 76%, var(--card));
   cursor: help;
   transition:
     background-color 140ms ease,
@@ -115,10 +125,15 @@
 }
 
 .inspector-field-info-trigger:hover,
+.inspector-field-info-trigger[aria-expanded="true"],
 .inspector-field-info-trigger:focus-visible {
-  outline: none;
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
   color: var(--primary);
+}
+
+.inspector .inspector-field-info-trigger:focus-visible {
+  outline: 1px solid var(--inspector-focus-border, var(--ring));
+  outline-offset: 1px;
 }
 
 /* ==========================================================================
