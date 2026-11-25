@@ -44,11 +44,30 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
-  border-radius: inherit;
   transition:
     background-color 140ms ease,
     box-shadow 140ms ease,
     color 140ms ease;
+}
+
+.inspector-group:is(
+  [data-group-type="mode"],
+  [data-group-type="role"],
+  [data-group-type="category"],
+  [data-group-type="property"]
+) {
+  --inspector-group-inner-radius: calc(var(--inspector-group-radius) - 1px);
+
+  border-radius: var(--inspector-group-radius);
+}
+
+.inspector-group > .inspector-group-header {
+  border-radius: var(--inspector-group-inner-radius, 0px);
+}
+
+.inspector-group[open] > .inspector-group-header {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .inspector-group-header:hover {
@@ -90,23 +109,19 @@
 
 .inspector-group-title strong {
   min-width: 0;
-  overflow: hidden;
   color: var(--foreground);
   font-size: 10.5px;
   font-weight: 800;
   line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .inspector-group-title small {
   min-width: 0;
-  overflow: hidden;
   color: var(--muted-foreground);
   font-size: 8px;
   line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .inspector-group-badge,
@@ -166,13 +181,16 @@
    ========================================================================== */
 
 .inspector-group[data-group-type="mode"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 9px);
   --inspector-group-accent: var(--inspector-group-mode-accent);
 
   margin-bottom: 12px;
   border: 1px solid var(--border);
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--inspector-group-accent) 5%, var(--muted));
-  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--inspector-group-accent) 70%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 5%,
+    var(--muted)
+  );
 }
 
 .inspector-group[data-group-type="mode"] > .inspector-group-header {
@@ -182,7 +200,11 @@
 
 .inspector-group[data-group-type="mode"] > .inspector-group-header:hover,
 .inspector-group[data-group-type="mode"][open] > .inspector-group-header {
-  background: color-mix(in srgb, var(--inspector-group-accent) 10%, var(--card));
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 10%,
+    var(--card)
+  );
 }
 
 .inspector-group[data-group-type="mode"][open] > .inspector-group-header {
@@ -192,21 +214,21 @@
 .inspector-group[data-group-type="mode"] > .inspector-group-body {
   padding: 8px;
   background: var(--card);
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--inspector-group-inner-radius)
+    var(--inspector-group-inner-radius);
 }
 
 .inspector-group[data-group-type="mode"] .inspector-group-icon {
-  background: color-mix(in srgb, var(--inspector-group-mode-accent) 14%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-mode-accent) 14%,
+    transparent
+  );
   color: var(--inspector-group-mode-accent);
 }
 
 .inspector-group[data-group-type="mode"][data-has-preset="true"] {
   border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
-}
-
-.inspector-group[data-group-type="mode"][data-has-preset="true"]
-  > .inspector-group-header {
-  box-shadow: inset 2px 0 0 var(--primary);
 }
 
 /* ==========================================================================
@@ -219,12 +241,11 @@
    ========================================================================== */
 
 .inspector-group[data-group-type="role"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 10px);
   --inspector-group-accent: var(--inspector-group-role-accent);
 
   margin-bottom: 16px;
   border: 1px solid var(--border);
-  border-left: 4px solid var(--inspector-group-accent);
-  border-radius: 10px;
   background: var(--card);
   box-shadow:
     var(--shadow-sm),
@@ -257,7 +278,11 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--inspector-group-role-accent) 14%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-role-accent) 14%,
+    transparent
+  );
   color: var(--inspector-group-role-accent);
 }
 
@@ -270,9 +295,11 @@
 }
 
 .inspector-group[data-group-type="role"][data-has-preset="true"] {
-  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
-
-  border-left-color: var(--inspector-group-accent);
+  border-color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 45%,
+    var(--border)
+  );
 }
 
 /* ==========================================================================
@@ -285,17 +312,18 @@
    ========================================================================== */
 
 .inspector-group[data-group-type="category"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 11px);
   --inspector-group-accent: var(--inspector-group-category-accent);
 
   margin: 16px 0 12px;
   border: 1px solid var(--border);
-  border-radius: 11px;
   background: linear-gradient(
     145deg,
     color-mix(in srgb, var(--inspector-group-accent) 7%, var(--muted)),
     var(--muted)
   );
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--foreground) 4%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
 .inspector-group[data-group-type="category"] > .inspector-group-header {
@@ -305,7 +333,11 @@
 
 .inspector-group[data-group-type="category"] > .inspector-group-header:hover,
 .inspector-group[data-group-type="category"][open] > .inspector-group-header {
-  background: color-mix(in srgb, var(--inspector-group-accent) 11%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 11%,
+    transparent
+  );
 }
 
 .inspector-group[data-group-type="category"][open] > .inspector-group-header {
@@ -317,7 +349,11 @@
 }
 
 .inspector-group[data-group-type="category"] .inspector-group-icon {
-  background: color-mix(in srgb, var(--inspector-group-category-accent) 16%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-category-accent) 16%,
+    transparent
+  );
   color: var(--inspector-group-category-accent);
 }
 
@@ -368,11 +404,19 @@
 }
 
 .inspector-group[data-group-type="section"] > .inspector-group-header:hover {
-  background: color-mix(in srgb, var(--inspector-group-accent) 8%, var(--accent));
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 8%,
+    var(--accent)
+  );
 }
 
 .inspector-group[data-group-type="section"][open] > .inspector-group-header {
-  border-bottom-color: color-mix(in srgb, var(--inspector-group-accent) 44%, var(--border));
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 44%,
+    var(--border)
+  );
   background: color-mix(in srgb, var(--inspector-group-accent) 6%, transparent);
 }
 
@@ -384,13 +428,21 @@
   width: 25px;
   height: 25px;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--inspector-group-section-accent) 14%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-section-accent) 14%,
+    transparent
+  );
   color: var(--inspector-group-section-accent);
 }
 
 .inspector-group[data-group-type="section"] .inspector-group-title strong {
   font-size: 10.5px;
-  color: color-mix(in srgb, var(--inspector-group-accent) 30%, var(--foreground));
+  color: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 30%,
+    var(--foreground)
+  );
 }
 
 .inspector-group[data-group-type="section"] .inspector-group-title small {
@@ -412,25 +464,34 @@
    ========================================================================== */
 
 .inspector-group[data-group-type="property"] {
+  --inspector-group-radius: var(--studio-inspector-group-radius, 8px);
   --inspector-group-accent: var(--inspector-group-property-accent);
 
   margin: 8px 0 0 8px;
   border: 1px solid color-mix(in srgb, var(--border) 58%, transparent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--inspector-group-accent) 3%, var(--muted));
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 6%,
+    var(--muted)
+  );
   box-shadow: none;
 }
 
 .inspector-group[data-group-type="property"]::before {
   content: "";
   position: absolute;
-  top: -9px;
+  top: 9px;
   bottom: 50%;
   left: -9px;
   width: 8px;
-  border-bottom: 1px solid color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
-  border-left: 1px solid color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
-  border-radius: 0 0 0 5px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+  border-left: 1px solid
+    color-mix(in srgb, var(--inspector-group-accent) 28%, var(--border));
+  border-radius: 6px 0 0 6px;
   pointer-events: none;
 }
 
@@ -441,7 +502,11 @@
 }
 
 .inspector-group[data-group-type="property"] > .inspector-group-header:hover {
-  background: color-mix(in srgb, var(--inspector-group-accent) 9%, var(--accent));
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-accent) 20%,
+    var(--accent)
+  );
   color: var(--inspector-hover-foreground);
 }
 
@@ -452,7 +517,8 @@
 
 .inspector-group[data-group-type="property"] > .inspector-group-body {
   padding: 8px;
-  border-radius: 0 0 7px 7px;
+  border-radius: 0 0 var(--inspector-group-inner-radius)
+    var(--inspector-group-inner-radius);
   background: var(--card);
 }
 
@@ -461,7 +527,11 @@
 }
 
 .inspector-group[data-group-type="property"] .inspector-group-icon {
-  background: color-mix(in srgb, var(--inspector-group-property-accent) 12%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--inspector-group-property-accent) 12%,
+    transparent
+  );
   color: var(--inspector-group-property-accent);
 }
 
@@ -483,7 +553,11 @@
 }
 
 .inspector-group[data-group-type="property"][data-has-preset="true"] {
-  border-color: color-mix(in srgb, var(--primary) 22%, color-mix(in srgb, var(--border) 58%, transparent));
+  border-color: color-mix(
+    in srgb,
+    var(--primary) 22%,
+    color-mix(in srgb, var(--border) 58%, transparent)
+  );
 }
 
 .inspector-group[data-group-type="property"][data-has-preset="true"]

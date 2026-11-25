@@ -40,6 +40,10 @@
     25px;
 }
 
+.css-range-widget-text-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .css-range-mode {
   display: grid;
   width: 25px;

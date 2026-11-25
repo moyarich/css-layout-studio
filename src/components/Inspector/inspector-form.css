@@ -58,23 +58,35 @@
 .inspector-field-control .label-field-wrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  min-width: 0;
+}
+
+.label-field-wrapper > label {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ==========================================================================
    5. Preset Indicators
    ========================================================================== */
 
+.label-field-wrapper.has-preset > label {
+  position: relative;
+  padding-inline-start: 10px;
+}
+
 .label-field-wrapper.has-preset > label::before {
   content: "";
-  display: inline-block;
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.65em;
+  transform: translateY(-50%);
   width: 5px;
   height: 5px;
-  margin-right: 5px;
   border-radius: 999px;
   background: var(--primary);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 12%, transparent);
-  vertical-align: 1px;
 }
 
 /* ==========================================================================
@@ -83,6 +95,7 @@
 
 .inspector-field-info {
   display: inline-flex;
+  flex: none;
 }
 
 .inspector-field-info-trigger {

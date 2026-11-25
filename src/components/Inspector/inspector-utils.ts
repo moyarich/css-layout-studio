@@ -80,6 +80,16 @@ function getRangeOptions(property: string): Record<string, unknown> | null {
     };
   }
 
+  if (/^border-(?:top|bottom)-(?:left|right)-radius$/.test(property)) {
+    return {
+      rangeMax: 256,
+      rangeStep: 0.01,
+      rangeUnits: ["px", "%", "rem", "em"],
+      rangeDefaultMode: "number",
+      rangePreserveValue: true,
+    };
+  }
+
   if (property === "opacity") {
     return {
       rangeMin: 0,

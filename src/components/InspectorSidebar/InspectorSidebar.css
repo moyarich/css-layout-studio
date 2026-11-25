@@ -131,7 +131,7 @@
 .studio .inspector-group {
   box-shadow: none;
   border-color: var(--studio-line);
-  border-radius: 7px;
+  --studio-inspector-group-radius: 7px;
 }
 .studio .inspector-group[open] > .inspector-group-header {
   background: var(--studio-bg);

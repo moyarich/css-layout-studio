@@ -99,7 +99,7 @@ try {
   await page.locator(".editor-frame .monaco-editor").click();
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.insertText(
-    ".container { width: 100%; height: 100%; display: grid; gap: 37px; border: 2px solid red !important; }",
+    ".container { width: 100%; height: 100%; display: grid; gap: 37px; border: 2px solid red !important; border-radius: 12px 8px / 6px 4px; border-top-right-radius: 25%; }",
   );
   await page.waitForFunction(() =>
     document
@@ -118,6 +118,30 @@ try {
   );
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Clear inspector search" }).click();
+  const inspectorSearch = page.getByRole("searchbox", { name: "Search inspector properties" });
+  await inspectorSearch.fill("corner radius");
+  await page.getByText("Corner radius", { exact: true }).waitFor();
+  const rightRadius = page.getByRole("spinbutton", { name: "Top-right radius", exact: true });
+  assert.equal(await rightRadius.inputValue(), "25");
+  const rightRadiusControl = page.locator(".inspector-field-control").filter({ has: rightRadius });
+  assert.equal(await rightRadiusControl.locator(".css-range-unit").inputValue(), "%");
+  await rightRadius.fill("30");
+  await rightRadius.blur();
+
+  const leftRadius = page.getByRole("textbox", { name: "Top-left radius", exact: true });
+  assert.equal(await leftRadius.inputValue(), "12px 6px");
+  await leftRadius.fill("14px 9px");
+  await leftRadius.blur();
+  await page.waitForFunction(() => {
+    const container = document.querySelector(".preview-shadow-host")?.shadowRoot?.querySelector(".container");
+    if (!container) return false;
+    const style = getComputedStyle(container);
+    return style.borderTopRightRadius === "30%" &&
+      style.borderTopLeftRadius === "14px 9px" &&
+      style.borderBottomRightRadius === "12px 6px";
+  });
+  await page.getByRole("button", { name: "Clear inspector search" }).click();
+
 
   await page.getByRole("tab", { name: "Overview", exact: true }).click();
   assert.equal(await page.locator(".live-card").count(), 1);

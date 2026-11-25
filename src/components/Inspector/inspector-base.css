@@ -28,13 +28,30 @@
   /* Inspector interaction aliases. These are the component theme API. */
   --inspector-hover-background: var(--accent);
   --inspector-hover-foreground: var(--accent-foreground);
-  --inspector-hover-border: color-mix(in srgb, var(--primary) 46%, var(--border));
-  --inspector-selected-background: color-mix(in srgb, var(--primary) 14%, var(--card));
+  --inspector-hover-border: color-mix(
+    in srgb,
+    var(--primary) 46%,
+    var(--border)
+  );
+  --inspector-selected-background: color-mix(
+    in srgb,
+    var(--primary) 14%,
+    var(--card)
+  );
   --inspector-selected-foreground: var(--foreground);
-  --inspector-selected-border: color-mix(in srgb, var(--primary) 42%, var(--border));
+  --inspector-selected-border: color-mix(
+    in srgb,
+    var(--primary) 42%,
+    var(--border)
+  );
   --inspector-focus-border: var(--ring);
-  --inspector-focus-ring: 0 0 0 3px color-mix(in srgb, var(--ring) 18%, transparent);
-  --inspector-open-background: color-mix(in srgb, var(--accent) 58%, transparent);
+  --inspector-focus-ring: 0 0 0 3px
+    color-mix(in srgb, var(--ring) 18%, transparent);
+  --inspector-open-background: color-mix(
+    in srgb,
+    var(--accent) 58%,
+    transparent
+  );
   --inspector-preset-accent: var(--primary);
   --inspector-group-mode-accent: var(--primary);
   --inspector-group-role-accent: var(--layout-role-container);
@@ -43,17 +60,4 @@
   --inspector-group-property-accent: var(--secondary-foreground);
 
   padding-bottom: 20px;
-}
-
-/* ==========================================================================
-   3. Inspector Controls
-   ========================================================================== */
-
-.inspector-controls {
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--card);
-  box-shadow: var(--shadow-sm);
 }
